@@ -1,5 +1,5 @@
 // Importa o React e os hooks para controle de estado e ciclo de vida
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 // Importa o cliente HTTP axios para consumo dos endpoints da API
 import axios from 'axios';
@@ -16,191 +16,155 @@ import imagemTorta from './img/torta.webp';
 // Importa a imagem GIF de Paulo Freire usada no cabeçalho
 import imagemPaulo from './img/pauloFreire.gif';
 
-// Define o endereço base da API backend (porta 3042)
-const URL_API = 'http://localhost:3042';
+// Define o endereço base da API backend
+const URL_API = 'http://localhost:304n';
 
-// Declara o componente funcional Alterar
 const Alterar = () => {
-  // Estado para armazenar o usuário digitado na tela de login
   const [usuario, setUsuario] = useState('');
-
-  // Estado para armazenar a senha digitada na tela de login
   const [senha, setSenha] = useState('');
-
-  // Estado booleano que indica se o usuário realizou o login com sucesso
   const [autenticado, setAutenticado] = useState(false);
-
-  // Estado para mensagens de erro geradas na validação do login
   const [mensagemErroLogin, setMensagemErroLogin] = useState('');
 
-  // Estado que armazena a lista de questões retornadas do banco de dados
   const [registros, setRegistros] = useState([]);
-
-  // Estado contendo os temas distintos disponíveis no banco
   const [temas, setTemas] = useState([]);
-
-  // Estado para o índice da pergunta atualmente visualizada na navegação
   const [indiceAtual, setIndiceAtual] = useState(0);
-
-  // Estado com o valor do tema selecionado no menu suspenso de filtro
   const [temaSelecionado, setTemaSelecionado] = useState('');
-
-  // Estado com o número da pergunta digitado para busca direta
   const [numeroPergunta, setNumeroPergunta] = useState('');
+  const [mensagemFeedback, setMensagemFeedback] = useState({ tipo: '', texto: '' });
 
-  // Estado para exibir notificações gerais de feedback (sucesso/erro)
-  const [mensagemFeedback, setMensagemFeedback] = useState('');
-
-  // Estado que armazena o novo arquivo de imagem selecionado pelo usuário
   const [arquivoImagem, setArquivoImagem] = useState(null);
-
-  // Estado para a URL de visualização da imagem da questão atual
   const [urlPreviaImagem, setUrlPreviaImagem] = useState(null);
+  const [versaoImagem, setVersaoImagem] = useState(Date.now());
 
-  // Versão numérica usada como cache buster para forçar a atualização da imagem
-  const [versaoImagem, setVersaoImagem] = useState(0);
+  // Estado para controlar o destaque de borda verde e aviso de imagem salva
+  const [imagemSalvaSucesso, setImagemSalvaSucesso] = useState(false);
 
-  // Função para validar o usuário e senha informados
+  const inputArquivoRef = useRef(null);
+
   const manipularEnvioLogin = (evento) => {
-    // Impede o recarregamento automático da página ao submeter o formulário
     evento.preventDefault();
 
-    // Checa se o usuário e a senha coincidem com as credenciais fixadas
     if (usuario === 'etecembu' && senha === 'etec@241') {
-      // Concede acesso ao painel de edição
       setAutenticado(true);
-      // Limpa mensagem de erro residual
       setMensagemErroLogin('');
     } else {
-      // Define aviso caso as credenciais estejam erradas
       setMensagemErroLogin('Usuário ou senha inválidos!');
     }
   };
 
-  // Efeito responsável por buscar dados apenas após autenticação com sucesso
   useEffect(() => {
-    // Se ainda não estiver autenticado, não faz requisições desnecessárias
     if (!autenticado) return;
-
-    // Busca a listagem de temas no banco
     buscarTemas();
-    // Busca todos os registros de questões
     buscarRegistros();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autenticado]);
 
-  // Efeito para atualizar a URL da imagem de pré-visualização quando a questão mudar
+  // Atualiza a URL de visualização da imagem
   useEffect(() => {
-    // Interrompe se não houver questões carregadas
-    if (registros.length === 0) return;
+    if (!registros.length || !registros[indiceAtual]) {
+      setUrlPreviaImagem(null);
+      return;
+    }
 
-    // Se o usuário ainda não escolheu um arquivo novo, usa a imagem salva no registro
-    if (!arquivoImagem) {
-      // Obtém o caminho da imagem do registro atual
-      const imagemRegistro = registros[indiceAtual]?.imagem;
+    if (arquivoImagem) {
+      const urlBlob = URL.createObjectURL(arquivoImagem);
+      setUrlPreviaImagem(urlBlob);
+      return () => URL.revokeObjectURL(urlBlob);
+    }
 
-      // Monta a URL completa com parâmetro de versão contra cache do navegador
-      setUrlPreviaImagem(
-        imagemRegistro ? `${URL_API}/${imagemRegistro}?v=${versaoImagem}` : null
-      );
+    const imagemRegistro = registros[indiceAtual]?.imagem;
+    console.log('🔍 [DEBUG] Renderizando imagem da questão:', {
+      numero: registros[indiceAtual]?.numero,
+      imagem: imagemRegistro,
+      versao: versaoImagem
+    });
+
+    if (imagemRegistro) {
+      const caminhoLimpo = imagemRegistro.startsWith('/') ? imagemRegistro.slice(1) : imagemRegistro;
+      const urlFinal = `${URL_API}/${caminhoLimpo}?v=${versaoImagem}`;
+      setUrlPreviaImagem(urlFinal);
+    } else {
+      setUrlPreviaImagem(null);
     }
   }, [indiceAtual, registros, arquivoImagem, versaoImagem]);
 
-  // Efeito para limpar mensagens de aviso após 5 segundos
   useEffect(() => {
-    // Se não houver mensagem na tela, ignora
-    if (!mensagemFeedback) return;
-
-    // Configura o cronômetro para apagar a mensagem após 5000 milissegundos
+    if (!mensagemFeedback.texto) return;
     const temporizador = setTimeout(() => {
-      // Apaga o texto do feedback
-      setMensagemFeedback('');
-      // Limpa o estado da imagem temporária
-      setArquivoImagem(null);
-      // Incrementa a versão para forçar re-render da imagem atualizada
-      setVersaoImagem((anterior) => anterior + 1);
+      setMensagemFeedback({ tipo: '', texto: '' });
     }, 5000);
-
-    // Limpa o temporizador caso o componente seja desmontado
     return () => clearTimeout(temporizador);
   }, [mensagemFeedback]);
 
-  // Função assíncrona para buscar todos os temas cadastrados
   const buscarTemas = async () => {
     try {
-      // Faz requisição GET para a rota de temas
       const resposta = await axios.get(`${URL_API}/temas`);
-      // Atualiza o estado com o array recebido
       setTemas(resposta.data);
     } catch (erro) {
-      // Exibe erro na interface caso a requisição falhe
-      setMensagemFeedback('Erro ao buscar temas');
+      console.error('❌ Erro ao buscar temas:', erro);
+      setMensagemFeedback({ tipo: 'danger', texto: 'Erro ao buscar temas' });
     }
   };
 
-  // Função assíncrona para buscar as questões com filtros opcionais
-  const buscarRegistros = async (filtroTema = '', filtroNumero = '') => {
+  const buscarRegistros = async (filtroTema = '', filtroNumero = '', manterIndice = null) => {
     try {
-      // Dispara requisição GET passando parâmetros de busca na query string
       const resposta = await axios.get(
         `${URL_API}/registros?tema=${filtroTema}&numero=${filtroNumero}`
       );
-      // Atualiza a lista de questões
+      console.log('📥 [DEBUG] Dados recebidos de /registros:', resposta.data);
       setRegistros(resposta.data);
-      // Retorna a navegação para o primeiro item retornado
-      setIndiceAtual(0);
-      // Reseta a imagem de edição
-      setArquivoImagem(null);
-      // Força nova versão da imagem
-      setVersaoImagem((anterior) => anterior + 1);
+
+      if (manterIndice !== null && manterIndice < resposta.data.length) {
+        setIndiceAtual(manterIndice);
+      } else {
+        setIndiceAtual(0);
+      }
+
+      limparSelecaoArquivo();
+      setVersaoImagem(Date.now());
     } catch (erro) {
-      // Exibe mensagem informativa de falha
-      setMensagemFeedback('Erro ao buscar registros');
+      console.error('❌ Erro ao buscar registros:', erro);
+      setMensagemFeedback({ tipo: 'danger', texto: 'Erro ao buscar registros' });
     }
   };
 
-  // Avança para a próxima pergunta da lista
+  const limparSelecaoArquivo = () => {
+    setArquivoImagem(null);
+    if (inputArquivoRef.current) {
+      inputArquivoRef.current.value = '';
+    }
+  };
+
+  // Navegação entre perguntas reseta o status de destaque da imagem
   const proximoRegistro = () => {
-    // Só avança se o índice atual não for o último elemento
     if (indiceAtual < registros.length - 1) {
-      // Incrementa o índice
       setIndiceAtual((anterior) => anterior + 1);
-      // Reseta a imagem enviada para não sobrescrever o próximo item
-      setArquivoImagem(null);
+      limparSelecaoArquivo();
+      setImagemSalvaSucesso(false);
     }
   };
 
-  // Volta para a pergunta anterior da lista
   const registroAnterior = () => {
-    // Só retrocede se o índice for maior que zero
     if (indiceAtual > 0) {
-      // Decrementa o índice
       setIndiceAtual((anterior) => anterior - 1);
-      // Reseta a imagem enviada
-      setArquivoImagem(null);
+      limparSelecaoArquivo();
+      setImagemSalvaSucesso(false);
     }
   };
 
-  // Pula diretamente para a última questão da lista
   const ultimoRegistro = () => {
-    // Verifica se existem registros carregados
     if (registros.length > 0) {
-      // Posiciona no último índice disponível
       setIndiceAtual(registros.length - 1);
-      // Reseta a imagem temporária
-      setArquivoImagem(null);
+      limparSelecaoArquivo();
+      setImagemSalvaSucesso(false);
     }
   };
 
-  // Função assíncrona para enviar as alterações do registro para o backend
   const alterarRegistro = async () => {
     try {
-      // Obtém o registro atual que está sendo modificado
       const registro = registros[indiceAtual];
-
-      // Instancia um FormData para enviar texto e arquivo binário
       const dadosFormulario = new FormData();
 
-      // Anexa os campos de texto atualizados
       dadosFormulario.append('tema', registro.tema);
       dadosFormulario.append('pergunta', registro.pergunta);
       dadosFormulario.append('A', registro.A);
@@ -209,65 +173,85 @@ const Alterar = () => {
       dadosFormulario.append('D', registro.D);
       dadosFormulario.append('correta', registro.correta);
 
-      // Se o usuário selecionou uma nova imagem, anexa ao envio
-      if (arquivoImagem) {
+      const enviouNovaImagem = Boolean(arquivoImagem);
+      if (enviouNovaImagem) {
         dadosFormulario.append('imagem', arquivoImagem);
+        console.log('📤 [DEBUG] Enviando arquivo:', arquivoImagem.name);
       }
 
-      // Envia a requisição PUT com o número identificador na rota
-      await axios.put(
+      console.log(`🚀 [DEBUG] Enviando PUT para: ${URL_API}/atualizar/${registro.numero}`);
+      const resposta = await axios.put(
         `${URL_API}/atualizar/${registro.numero}`,
         dadosFormulario
       );
 
-      // Reseta o estado do arquivo enviado
-      setArquivoImagem(null);
-      // Incrementa a versão para atualizar o preview imediatamente
-      setVersaoImagem((anterior) => anterior + 1);
-      // Informa ao usuário que a alteração foi concluída com sucesso
-      setMensagemFeedback('Registro atualizado com sucesso!');
+      console.log('✅ [DEBUG] Resposta completa do backend:', resposta.data);
+
+      const imagemRetornada =
+        resposta.data?.imagem ||
+        resposta.data?.registro?.imagem ||
+        resposta.data?.dados?.imagem ||
+        registro.imagem;
+
+      const novoTimestamp = Date.now();
+      const indiceSalvo = indiceAtual;
+
+      setRegistros((anterior) => {
+        const copia = [...anterior];
+        copia[indiceSalvo] = {
+          ...copia[indiceSalvo],
+          imagem: imagemRetornada
+        };
+        return copia;
+      });
+
+      setVersaoImagem(novoTimestamp);
+      limparSelecaoArquivo();
+
+      // Ativa o destaque de borda verde e frase de sucesso para a imagem
+      setImagemSalvaSucesso(true);
+
+      // Desativa o destaque verde após 5 segundos (opcional)
+      setTimeout(() => {
+        setImagemSalvaSucesso(false);
+      }, 5000);
+
+      await buscarRegistros(temaSelecionado, numeroPergunta, indiceSalvo);
+
+      setMensagemFeedback({
+        tipo: 'success',
+        texto: 'Registro e imagem atualizados com sucesso!'
+      });
     } catch (erro) {
-      // Imprime o erro no console para diagnóstico
-      console.error(erro);
-      // Exibe erro no componente de alerta
-      setMensagemFeedback('Erro ao atualizar registro');
+      console.error('❌ [DEBUG] Erro na requisição:', erro.response?.data || erro.message);
+      setImagemSalvaSucesso(false);
+      setMensagemFeedback({
+        tipo: 'danger',
+        texto: 'Erro ao atualizar o registro. Verifique os dados e tente novamente.'
+      });
     }
   };
 
-  // Trata alterações nos campos de texto e selects do formulário de edição
   const manipularMudancaTexto = (evento) => {
-    // Extrai o nome do campo e o novo valor digitado
     const { name, value } = evento.target;
-
-    // Atualiza a lista no estado de forma imutável
     setRegistros((anterior) => {
-      // Clona o array original
       const copia = [...anterior];
-      // Modifica apenas a propriedade alterada no registro atual
       copia[indiceAtual] = { ...copia[indiceAtual], [name]: value };
-      // Retorna o array atualizado
       return copia;
     });
   };
 
-  // Trata a seleção de um novo arquivo de imagem
   const manipularMudancaImagem = (evento) => {
-    // Captura o primeiro arquivo selecionado
     const arquivo = evento.target.files[0];
-
-    // Se houver arquivo selecionado
     if (arquivo) {
-      // Salva o arquivo no estado
+      console.log('📁 [DEBUG] Novo arquivo selecionado:', arquivo);
       setArquivoImagem(arquivo);
-      // Cria a URL temporária para visualização imediata em tela
-      setUrlPreviaImagem(URL.createObjectURL(arquivo));
+      setImagemSalvaSucesso(false); // Reseta a borda verde enquanto não for salvo
     }
   };
 
   return (
-    // Estrutura raiz preservando a classe CSS original da aplicação
     <div className="Interface">
-      {/* Cabeçalho padrão do evento */}
       <header>
         <img className="imgFoto" style={estilos.imgFoto} src={imagemTorta} alt="Torta na Cara" />
         <div>
@@ -277,7 +261,6 @@ const Alterar = () => {
         <img className="imgPaulo" src={imagemPaulo} alt="Paulo Freire" />
       </header>
 
-      {/* Seção com as mesmas medidas e estilos originais de layout */}
       <section
         style={{
           width: '80%',
@@ -288,13 +271,10 @@ const Alterar = () => {
           fontWeight: 'bold'
         }}
       >
-        {/* Renderização condicional: se não estiver autenticado, exibe o Login */}
         {!autenticado ? (
-          // Formulário de Login de Acesso
           <Form onSubmit={manipularEnvioLogin} style={{ marginTop: '35px' }}>
             <h2 style={{ marginBottom: 25 }}>Acesso às Alterações</h2>
 
-            {/* Campo Usuário */}
             <Form.Group controlId="formUsuarioLogin" style={{ marginBottom: 15 }}>
               <Form.Label>Usuário:</Form.Label>
               <Form.Control
@@ -306,7 +286,6 @@ const Alterar = () => {
               />
             </Form.Group>
 
-            {/* Campo Senha */}
             <Form.Group controlId="formSenhaLogin" style={{ marginBottom: 20 }}>
               <Form.Label>Senha:</Form.Label>
               <Form.Control
@@ -318,7 +297,6 @@ const Alterar = () => {
               />
             </Form.Group>
 
-            {/* Botão para submissão do login */}
             <Button
               variant="primary"
               type="submit"
@@ -327,7 +305,6 @@ const Alterar = () => {
               Entrar
             </Button>
 
-            {/* Mensagem caso o login seja rejeitado */}
             {mensagemErroLogin && (
               <Alert variant="danger" style={{ width: '50%', margin: '20px auto 0', fontSize: 14 }}>
                 {mensagemErroLogin}
@@ -335,9 +312,7 @@ const Alterar = () => {
             )}
           </Form>
         ) : (
-          // Formulário de Alteração (exibido apenas após login com sucesso)
           <Form>
-            {/* Bloco de filtro por tema */}
             <Form.Group>
               <Form.Label>Filtrar por Tema:</Form.Label>
               <Form.Control
@@ -363,7 +338,6 @@ const Alterar = () => {
               </Button>
             </Form.Group>
 
-            {/* Bloco de busca por número da pergunta */}
             <Form.Group className="mt-3">
               <Form.Label>Buscar pelo Número da Pergunta:</Form.Label>
               <Form.Control
@@ -382,18 +356,16 @@ const Alterar = () => {
               </Button>
             </Form.Group>
 
-            {/* Renderiza os campos de edição somente se houver registros carregados */}
-            {registros.length > 0 && (
+            {registros.length > 0 && registros[indiceAtual] && (
               <>
                 <Form.Label>Pergunta Nº. {registros[indiceAtual].numero}</Form.Label>
 
-                {/* Seleção de Tema da Pergunta Atual */}
                 <Form.Group>
                   <Form.Label>Tema:</Form.Label>
                   <Form.Control
                     as="select"
                     name="tema"
-                    value={registros[indiceAtual].tema}
+                    value={registros[indiceAtual].tema || ''}
                     onChange={manipularMudancaTexto}
                     style={{ width: '50%', marginBottom: '10px', margin: '0 auto' }}
                   >
@@ -405,39 +377,36 @@ const Alterar = () => {
                   </Form.Control>
                 </Form.Group>
 
-                {/* Edição do Enunciado da Pergunta */}
                 <Form.Group className="mt-2">
                   <Form.Label>Pergunta:</Form.Label>
                   <Form.Control
                     as="textarea"
                     name="pergunta"
-                    value={registros[indiceAtual].pergunta}
+                    value={registros[indiceAtual].pergunta || ''}
                     onChange={manipularMudancaTexto}
                     style={{ width: '60%', height: 80, margin: '0 auto', marginTop: 10 }}
                   />
                 </Form.Group>
 
-                {/* Edição das alternativas A, B, C e D */}
                 {['A', 'B', 'C', 'D'].map((opcao) => (
                   <Form.Group key={opcao} className="mt-2">
                     <Form.Label>{opcao}:</Form.Label>
                     <Form.Control
                       type="text"
                       name={opcao}
-                      value={registros[indiceAtual][opcao]}
+                      value={registros[indiceAtual][opcao] || ''}
                       onChange={manipularMudancaTexto}
                       style={{ width: '60%', margin: '0 auto' }}
                     />
                   </Form.Group>
                 ))}
 
-                {/* Seleção da Resposta Correta */}
                 <Form.Group className="mt-2">
                   <Form.Label>Resposta Correta:</Form.Label>
                   <Form.Control
                     as="select"
                     name="correta"
-                    value={registros[indiceAtual].correta}
+                    value={registros[indiceAtual].correta || 'A'}
                     onChange={manipularMudancaTexto}
                     style={{ width: '20%', margin: '0 auto' }}
                   >
@@ -448,28 +417,52 @@ const Alterar = () => {
                   </Form.Control>
                 </Form.Group>
 
-                {/* Campo de atualização da imagem */}
                 <Form.Group className="mt-3">
                   <Form.Label>Imagem:</Form.Label>
                   <Form.Control 
                     type="file" 
+                    ref={inputArquivoRef}
                     onChange={manipularMudancaImagem} 
                     style={{ width: '60%', margin: '0 auto' }}
                   />
                 </Form.Group>
 
-                {/* Pré-visualização da imagem atual/nova */}
+                {/* Bloco de Exibição da Imagem com Borda e Frase de Sucesso */}
                 {urlPreviaImagem && (
-                  <div className="mt-3">
+                  <div className="mt-3" style={{ display: 'inline-block' }}>
                     <img
                       src={urlPreviaImagem}
                       alt="Pré-visualização"
-                      style={{ width: 200, height: 200, borderRadius: 100, objectFit: 'cover' }}
+                      onError={() => console.warn('⚠️ Falha ao carregar URL da imagem:', urlPreviaImagem)}
+                      style={{
+                        width: 200,
+                        height: 200,
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        border: imagemSalvaSucesso ? '5px solid #28a745' : '3px solid #ccc',
+                        boxShadow: imagemSalvaSucesso ? '0 0 15px rgba(40, 167, 69, 0.7)' : 'none',
+                        transition: 'all 0.3s ease-in-out'
+                      }}
                     />
+                    {imagemSalvaSucesso && (
+                      <div
+                        style={{
+                          marginTop: 8,
+                          color: '#28a745',
+                          fontSize: '13pt',
+                          fontWeight: 'bold',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 6
+                        }}
+                      >
+                        <span>✓</span> Imagem salva com sucesso!
+                      </div>
+                    )}
                   </div>
                 )}
 
-                {/* Botões de navegação e salvamento */}
                 <div style={{ marginTop: 30, marginBottom: 30 }}>
                   <Button
                     variant="secondary"
@@ -514,8 +507,14 @@ const Alterar = () => {
           </Form>
         )}
 
-        {/* Mensagens de notificação de sucesso ou erro */}
-        {mensagemFeedback && <Alert variant="info">{mensagemFeedback}</Alert>}
+        {mensagemFeedback.texto && (
+          <Alert 
+            variant={mensagemFeedback.tipo || 'info'} 
+            style={{ width: '60%', margin: '20px auto', fontSize: 16 }}
+          >
+            {mensagemFeedback.texto}
+          </Alert>
+        )}
       </section>
     </div>
   );
