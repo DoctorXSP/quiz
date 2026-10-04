@@ -1,0 +1,347 @@
+header {
+    background: rgb(245,115,2);
+    background: linear-gradient(180deg, rgba(245,115,2,1) 0%, rgba(255,213,19,0.8715861344537815) 70%);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 150px;
+    width: 100%;
+    text-align: center;
+    padding-top: 5px;    
+}
+header h1{
+    font-size: 3em;
+}
+header h2 {
+    font-size: 2.5em;
+    margin-top: -35px;
+}
+header img {
+    margin: 0 25px;
+}
+section {
+    background-color:  #ffd513de;
+    display: block;
+    min-height: 650px;
+    width: 100%;
+}
+.tema {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-start;
+    font-size: 2em;
+    margin-left: 20px;
+    z-index: 5;
+}
+
+.titPergunta {
+    
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-start;
+    font-size: 2em;
+    margin-left: 20px;
+    margin-top: -45px;
+    z-index: 5;
+}
+.Pergunta {
+    
+    display: flex;
+    flex-direction: row;
+    width: 95%;
+    justify-content: flex-start;
+    font-size: 2em;
+    margin-left: 20px;
+    margin-top: -45px;
+    z-index: 5;
+    text-align: justify;
+}
+.titTema {
+    font-weight: 700;
+    margin-right: 15px;
+}
+.icon {
+    margin-left: 20px;
+}
+.perguntas {
+    display: block;
+    float: left;
+    width: 60%;
+    background-color: #fcffab;
+    border-radius: 15px;
+    margin: 15px;
+    z-index: 1;
+}
+.pergunta p {
+    float: rigth;
+    margin: 0;
+   padding: 25px;
+}
+.perguntas img {
+    width: 200px;
+    height: 200px;
+    border-radius: 100px;
+    float: left;
+    margin: 0;
+    box-shadow: 5px 5px 5px #000;
+    margin-right: 10px;
+}
+.alternativas {
+    display: block;
+    float: left;
+    width: 35%;
+    margin: 15px;
+    z-index: 1;
+}
+.boxAlternativas {
+    background-color: #fcffab;
+    border-radius: 15px;
+    width: 100%;
+}
+.opcao {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    font-size: 1.5em;
+}
+.opcao button {
+    border-radius: 150px;
+    font-size: 1em;
+    padding: 10px;
+    margin: 20px;
+    width: 60px;
+    height: 60px;
+    box-shadow: 5px 5px 5px #000;
+    font-weight: 700;
+}
+.textOpcao {
+    margin-right: 20px;
+    text-align: left;
+}
+.btnA {
+    background-color: red;
+    color: #FFF;   
+}
+.btnB {
+    background-color: green;
+    color: #FFF;   
+}
+.btnC {
+    background-color: blue;
+    color: #FFF;   
+}
+.btnD {
+    background-color: #bb00ff;
+    color: #FFF;  
+}
+.botoesAcao {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    font-size: 2em;
+    padding: 15px;
+    margin-top: 15px;
+}
+.botesAcao button {
+    border-radius: 150px;
+    font-size: 1em;
+    padding: 10px;
+    margin: 25px 20px 0 20px;
+    width: 60px;
+    height: 60px;
+    box-shadow: 5px 5px 5px #000;
+    font-weight: 700;
+    font-size: 2em;
+}
+.Perdeu {
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 15px;
+    margin-right: 30px;
+    box-shadow: 5px 5px 5px #000;
+    background-color: red;
+    color: #FFF;
+    animation: zoom 2s infinite; 
+}
+.Avancar {
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 15px;
+    margin-right: 30px;
+    box-shadow: 5px 5px 5px #000;
+    background-color: green;
+    color: #FFF;
+    animation: aparecer 1s ease-in-out;
+    animation-delay: 120s; /* 2 minutos */
+    animation-fill-mode: forwards;
+}
+.Avancar button {
+    z-index: 50;
+    position: absolute;
+    top: 450px;
+    left: 500px;
+}
+.errou {
+    display: block;
+    position: absolute;
+    top: 50px;
+    left: 300px;
+    z-index: 10;
+    width: 600px;
+    height: 600px;
+}
+.errou p {
+    z-index: 20;
+    display: block;
+    position: absolute;
+    top: 50px;
+    left: 80px;
+    color: red;
+    font-size: 6em;
+    font-weight: 900;
+    text-align: center;
+    text-shadow: 5px 5px 5px #000;
+    animation: zoom 2s infinite;
+}
+.errou img {
+    width: 600px;
+    height: 600px;
+    animation: zoom 2s infinite;
+    filter: drop-shadow(5px 5px 15px #000)
+}
+.errou button {
+    z-index: 50;
+    position: absolute;
+    display: block;
+    top: 600px;
+    left: 550px;
+    width: 200px;
+    padding: 15px 5px;;
+}
+.acertou {
+    display: block;
+    position: absolute;
+    top: 50px;
+    left: 350px;
+    z-index: 10;
+    width: 600px;
+    height: 600px; 
+}
+.acertou img {
+    width: 600px;
+    height: 600px;
+    animation: zoom 2s infinite;
+    filter: drop-shadow(5px 5px 15px #000)
+}
+.acertou p {
+    z-index: 20;
+    display: block;
+    position: absolute;
+    top: 150px;
+    left: 70px;
+    color: green;
+    font-size: 6em;
+    font-weight: 900;
+    text-align: center;
+    text-shadow: 5px 5px 5px #000;
+    animation: zoom 2s infinite;
+}
+.acertou button {
+    z-index: 50;
+    position: absolute;
+    display: block;
+    top: 600px;
+    left: 550px;
+    width: 200px;
+    padding: 15px 5px;;
+}
+.Entrada {
+    background: rgb(245,115,2);
+    background: linear-gradient(180deg, rgba(245,115,2,1) 0%, rgba(255,213,19,0.8715861344537815) 70%);
+    display: flex;
+    flex-direction: row;
+}
+.Entrada img {
+    
+    height: 800PX;
+}
+.Entrada .Titulo {
+    font-size: 3.8em;
+    margin-top: 250px;
+    text-shadow: #000 15px 15px 20px;
+    color:red;
+}
+.Entrada .subTitulo{
+    z-index: 4;
+    width: 700;
+    position:absolute;
+    top: 150px;
+    left: 520px;
+    text-align: center;
+    font-size: 4em;
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+}
+.Entrada .Torta {
+    z-index: 10;
+    width: 700px;
+    height: 700px;
+    position:absolute;
+    top: 20px;
+    left: 60px;
+    animation: fadeInOut 4s linear infinite;
+}
+.Debug {
+    z-index: 35;
+    display: block;
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+}
+.Debug span{
+    font-weight: bold;
+    margin-left: 10px;
+}
+.Debug1 {
+    z-index: 35;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+.Debug1 span{
+    font-weight: bold;
+    margin-left: 10px;
+}
+.Esconde {
+    background-color:  #ffd513;
+    color: #ffd513;
+    display: block;
+    padding: auto;
+    width: 400px;
+    min-width: 4000px;
+    height: 100px;
+    min-height: 60px;
+    z-index: 10;
+}
+@keyframes zoom {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.5);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes fadeInOut {
+    0%, 20% {opacity: 0;}
+    50% {opacity: 1;}
+    80%, 100% {opacity: 0;}
+  }
+
+  
