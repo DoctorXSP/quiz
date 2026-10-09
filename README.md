@@ -37,4 +37,4 @@ npm start
    O servidor subirá por padrão na porta definida nas variáveis de ambiente (ex.: http://localhost:3042).   3. Configurar o FrontendEm um novo terminal, acerte as dependências do client React e execute:   Bashcd frontend
 npm install
 npm start
-   Abra http://localhost:3000 no navegador para iniciar o jogo.   📄 LicençaDistribuído sob a licença ISC.
+   Abra http://localhost:3000 no navegador para iniciar o jogo.   📄 LicençaDistribuído sob a licença ISC. 
