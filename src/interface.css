@@ -1,347 +1,635 @@
+/* ========================================================
+   ESTILOS GERAIS E DESKTOP / PC (> 1024px) - INTERFACE
+   ======================================================== */
 header {
-    background: rgb(245,115,2);
-    background: linear-gradient(180deg, rgba(245,115,2,1) 0%, rgba(255,213,19,0.8715861344537815) 70%);
+    background: rgb(245, 115, 2);
+    background: linear-gradient(180deg, rgba(245, 115, 2, 1) 0%, rgba(255, 213, 19, 0.87) 70%);
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     height: 150px;
     width: 100%;
     text-align: center;
-    padding-top: 5px;    
-}
-header h1{
-    font-size: 3em;
-}
-header h2 {
-    font-size: 2.5em;
-    margin-top: -35px;
-}
-header img {
-    margin: 0 25px;
-}
-section {
-    background-color:  #ffd513de;
-    display: block;
-    min-height: 650px;
-    width: 100%;
-}
-.tema {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: flex-start;
-    font-size: 2em;
-    margin-left: 20px;
-    z-index: 5;
+    padding: 5px 0;
+    box-sizing: border-box;
 }
 
-.titPergunta {
-    
+header .tituloHeader {
+    flex: 1;
+}
+
+header h1 {
+    font-size: 3em;
+    margin: 0;
+}
+
+header h2 {
+    font-size: 2.2em;
+    margin: 5px 0 0 0;
+}
+
+header img {
+    margin: 0 25px;
+    max-height: 120px;
+    object-fit: contain;
+}
+
+/* SECTION PRINCIPAL DA INTERFACE DE JOGO */
+section {
+    background-color: #ffd513de;
     display: flex;
     flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    min-height: 650px;
     width: 100%;
-    justify-content: flex-start;
-    font-size: 2em;
-    margin-left: 20px;
-    margin-top: -45px;
-    z-index: 5;
+    box-sizing: border-box;
+    padding: 20px 20px 0 20px;
+    gap: 20px;
+    position: relative;
 }
-.Pergunta {
-    
+
+/* 1. Imagem na esquerda */
+.areaImagem {
+    flex: 0 0 370px;
     display: flex;
-    flex-direction: row;
-    width: 95%;
-    justify-content: flex-start;
-    font-size: 2em;
-    margin-left: 20px;
-    margin-top: -45px;
-    z-index: 5;
-    text-align: justify;
+    align-items: flex-start;
+    justify-content: center;
+    align-self: flex-start;
+    box-sizing: border-box;
+    margin-bottom: 35px;
 }
-.titTema {
-    font-weight: 700;
-    margin-right: 15px;
-}
-.icon {
-    margin-left: 20px;
-}
-.perguntas {
-    display: block;
-    float: left;
-    width: 60%;
+
+.areaImagem img {
+    width: 350px;
+    height: 350px;
+    border-radius: 5%;
+    object-fit: cover;
+    box-shadow: 6px 6px 16px rgba(0, 0, 0, 0.45);
     background-color: #fcffab;
-    border-radius: 15px;
-    margin: 15px;
-    z-index: 1;
+    border: 4px solid #fff;
 }
-.pergunta p {
-    float: rigth;
-    margin: 0;
-   padding: 25px;
+
+.areaImagem .semImagem {
+    width: 350px;
+    height: 350px;
+    border-radius: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(252, 255, 171, 0.5);
+    border: 3px dashed #777;
+    font-size: 1.4em;
+    font-weight: 600;
+    color: #555;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
 }
-.perguntas img {
-    width: 200px;
-    height: 200px;
-    border-radius: 100px;
-    float: left;
-    margin: 0;
-    box-shadow: 5px 5px 5px #000;
-    margin-right: 10px;
+
+/* 2. Área das perguntas */
+.perguntas {
+    flex: 1;
+    max-height: 450px;
+    align-self: flex-start;
+    overflow-y: auto;
+    background-color: #fcffab;
+    border-radius: 20px;
+    padding: 25px 30px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 0px;
 }
+
+.cronometro { margin: 0; }
+.tema, .titPergunta { display: flex; align-items: baseline; font-size: 2em; margin: 0; }
+.Pergunta { margin: 0; text-align: justify; line-height: 1.35; word-break: break-word; font-size: 1.85em; flex: 1; }
+.Pergunta.pergunta-longa { font-size: 1.45em; line-height: 1.25; }
+.Pergunta.pergunta-extralonga { font-size: 1.2em; line-height: 1.2; }
+.Pergunta p { margin: 0; padding: 0; }
+.titTema { font-weight: 800; margin-right: 12px; }
+
+/* 3. Alternativas */
 .alternativas {
-    display: block;
-    float: left;
-    width: 35%;
-    margin: 15px;
-    z-index: 1;
+    flex: 0 0 410px;
+    box-sizing: border-box;
+    margin-bottom: 35px;
 }
+
 .boxAlternativas {
     background-color: #fcffab;
-    border-radius: 15px;
+    border-radius: 20px;
     width: 100%;
+    padding: 16px 12px 8px 12px;
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
 }
+
 .opcao {
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
-    font-size: 1.5em;
+    align-items: center;
+    font-size: 1.3em;
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.12);
 }
+
+.opcao:last-child {
+    border-bottom: none;
+    padding-bottom: 4px;
+    margin-bottom: 0;
+}
+
 .opcao button {
-    border-radius: 150px;
+    border-radius: 50%;
     font-size: 1em;
-    padding: 10px;
-    margin: 20px;
-    width: 60px;
-    height: 60px;
-    box-shadow: 5px 5px 5px #000;
+    margin: 3px 14px 0 6px;
+    width: 50px;
+    height: 50px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.35);
     font-weight: 700;
+    cursor: pointer;
+    border: none;
+    flex-shrink: 0;
 }
-.textOpcao {
-    margin-right: 20px;
-    text-align: left;
-}
-.btnA {
-    background-color: red;
-    color: #FFF;   
-}
-.btnB {
-    background-color: green;
-    color: #FFF;   
-}
-.btnC {
-    background-color: blue;
-    color: #FFF;   
-}
-.btnD {
-    background-color: #bb00ff;
-    color: #FFF;  
-}
+
+.textOpcao { margin: 0; padding-right: 8px; text-align: left; line-height: 1.35; word-break: break-word; flex: 1; }
+.btnA { background-color: red; color: #FFF; }
+.btnB { background-color: green; color: #FFF; }
+.btnC { background-color: blue; color: #FFF; }
+.btnD { background-color: #bb00ff; color: #FFF; }
+
 .botoesAcao {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    font-size: 2em;
-    padding: 15px;
-    margin-top: 15px;
+    font-size: 1.5em;
+    padding: 12px 0 0 0;
 }
-.botesAcao button {
-    border-radius: 150px;
-    font-size: 1em;
-    padding: 10px;
-    margin: 25px 20px 0 20px;
-    width: 60px;
-    height: 60px;
-    box-shadow: 5px 5px 5px #000;
-    font-weight: 700;
-    font-size: 2em;
-}
+
 .Perdeu {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
-    padding: 10px 20px;
+    padding: 12px 24px;
     border-radius: 15px;
-    margin-right: 30px;
     box-shadow: 5px 5px 5px #000;
     background-color: red;
     color: #FFF;
+    border: none;
     animation: zoom 2s infinite; 
 }
+
 .Avancar {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
-    padding: 10px 20px;
+    padding: 14px 28px;
     border-radius: 15px;
-    margin-right: 30px;
-    box-shadow: 5px 5px 5px #000;
+    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.5);
     background-color: green;
     color: #FFF;
-    animation: aparecer 1s ease-in-out;
-    animation-delay: 120s; /* 2 minutos */
-    animation-fill-mode: forwards;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease;
 }
-.Avancar button {
-    z-index: 50;
-    position: absolute;
-    top: 450px;
-    left: 500px;
+
+.Avancar:active { transform: scale(0.96); }
+.icon { margin-left: 10px; }
+
+/* 4. Rodapé */
+.rodape-debug {
+    background-color: #222;
+    color: #bbb;
+    font-size: 0.9em;
+    text-align: center;
+    padding: 8px 15px;
+    width: 100%;
+    box-sizing: border-box;
+    letter-spacing: 0.5px;
 }
-.errou {
-    display: block;
-    position: absolute;
-    top: 50px;
-    left: 300px;
-    z-index: 10;
-    width: 600px;
-    height: 600px;
+.rodape-debug span { margin: 0 6px; }
+.rodape-debug strong { color: #ffd513; }
+
+/* Modais de Acerto / Erro */
+.errou, .acertou {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99999;
+    background-color: rgba(0, 0, 0, 0.75);
+    box-sizing: border-box;
+    padding: 20px;
 }
-.errou p {
-    z-index: 20;
-    display: block;
-    position: absolute;
-    top: 50px;
-    left: 80px;
-    color: red;
-    font-size: 6em;
+
+.errou p, .acertou p {
+    font-size: 4em;
     font-weight: 900;
     text-align: center;
-    text-shadow: 5px 5px 5px #000;
+    text-shadow: 4px 4px 8px #000;
+    margin: 0 0 15px 0;
+}
+
+.errou p { color: red; animation: zoom 2s infinite; }
+.acertou p { color: #10b981; }
+
+.errou img, .acertou img {
+    max-width: 320px;
+    max-height: 320px;
+    width: 60vw;
+    height: auto;
     animation: zoom 2s infinite;
+    filter: drop-shadow(5px 5px 15px #000);
+    margin-bottom: 25px;
 }
-.errou img {
-    width: 600px;
-    height: 600px;
-    animation: zoom 2s infinite;
-    filter: drop-shadow(5px 5px 15px #000)
+
+.errou button, .acertou button {
+    position: static;
+    min-width: 260px;
+    padding: 16px 24px;
+    font-size: 1.4rem;
 }
-.errou button {
-    z-index: 50;
-    position: absolute;
-    display: block;
-    top: 600px;
-    left: 550px;
-    width: 200px;
-    padding: 15px 5px;;
+
+@keyframes zoom {
+    0% { transform: scale(1); }
+    50% { transform: scale(2.08); }
+    100% { transform: scale(1); }
 }
-.acertou {
-    display: block;
-    position: absolute;
-    top: 50px;
-    left: 350px;
-    z-index: 10;
-    width: 600px;
-    height: 600px; 
+
+@keyframes zoomEntrada {
+    0% { transform: translate(-50%, -50%) scale(2.5); }
+    50% { transform: translate(-50%, -50%) scale(4.5); }
+    100% { transform: translate(-50%, -50%) scale(2.5); }
 }
-.acertou img {
-    width: 600px;
-    height: 600px;
-    animation: zoom 2s infinite;
-    filter: drop-shadow(5px 5px 15px #000)
-}
-.acertou p {
-    z-index: 20;
-    display: block;
-    position: absolute;
-    top: 150px;
-    left: 70px;
-    color: green;
-    font-size: 6em;
-    font-weight: 900;
-    text-align: center;
-    text-shadow: 5px 5px 5px #000;
-    animation: zoom 2s infinite;
-}
-.acertou button {
-    z-index: 50;
-    position: absolute;
-    display: block;
-    top: 600px;
-    left: 550px;
-    width: 200px;
-    padding: 15px 5px;;
-}
-.Entrada {
-    background: rgb(245,115,2);
-    background: linear-gradient(180deg, rgba(245,115,2,1) 0%, rgba(255,213,19,0.8715861344537815) 70%);
+
+/* ========================================================
+   ESTILOS EXCLUSIVOS DA TELA DE ENTRADA (ISOLADOS)
+   ======================================================== */
+.Entrada-wrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #ffd513;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
 }
-.Entrada img {
-    
-    height: 800PX;
-}
-.Entrada .Titulo {
-    font-size: 3.8em;
-    margin-top: 250px;
-    text-shadow: #000 15px 15px 20px;
-    color:red;
-}
-.Entrada .subTitulo{
-    z-index: 4;
-    width: 700;
-    position:absolute;
-    top: 150px;
-    left: 520px;
-    text-align: center;
-    font-size: 4em;
-    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
-}
-.Entrada .Torta {
-    z-index: 10;
-    width: 700px;
-    height: 700px;
-    position:absolute;
-    top: 20px;
-    left: 60px;
-    animation: fadeInOut 4s linear infinite;
-}
-.Debug {
-    z-index: 35;
-    display: block;
-    position: absolute;
-    bottom: 40px;
-    left: 0;
-}
-.Debug span{
-    font-weight: bold;
-    margin-left: 10px;
-}
-.Debug1 {
-    z-index: 35;
-    display: block;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-}
-.Debug1 span{
-    font-weight: bold;
-    margin-left: 10px;
-}
-.Esconde {
-    background-color:  #ffd513;
-    color: #ffd513;
-    display: block;
-    padding: auto;
-    width: 400px;
-    min-width: 4000px;
-    height: 100px;
-    min-height: 60px;
-    z-index: 10;
-}
-@keyframes zoom {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.5);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  @keyframes fadeInOut {
-    0%, 20% {opacity: 0;}
-    50% {opacity: 1;}
-    80%, 100% {opacity: 0;}
-  }
 
-  
+.Entrada-foto {
+    width: 60vw;
+    height: 120vh;
+    object-fit: cover;
+    object-position: top center;
+    z-index: 2;
+    flex-shrink: 0;
+    pointer-events: none;
+    margin-left: -10vw;
+    margin-top: -160px;
+}
+
+.Entrada-textos {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 10;
+    padding: 20px;
+    pointer-events: none;
+}
+
+.Entrada-subTitulo h2 {
+    font-size: 3.5rem;
+    color: #222;
+    margin: 0;
+    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.7);
+}
+
+.Entrada-titulo h1 {
+    font-size: 5.5rem;
+    font-weight: 900;
+    color: #e60000;
+    margin: 15px 0 0 0;
+    text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.45);
+    letter-spacing: 2px;
+}
+
+.Entrada-torta {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
+    pointer-events: none;
+    animation: zoomEntrada 3s ease-in-out infinite;
+}
+
+.Entrada-torta img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    opacity: 0.7;
+    filter: drop-shadow(0px 10px 30px rgba(0, 0, 0, 0.5));
+}
+
+/* ========================================================
+   ESTILOS EXCLUSIVOS DO LOGIN NO PC (> 1024px)
+   ======================================================== */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: calc(100vh - 180px);
+    box-sizing: border-box;
+}
+
+/* 40% da largura da tela, centralizado e com 30% de respiro lateral */
+.login-card {
+    width: 40%;
+    margin: 0 auto;
+    padding: 40px 12%; /* 12% em cada lado = quase 30% de área de respiro interno */
+    background-color: #fcffab;
+    border-radius: 20px;
+    box-shadow: 4px 6px 18px rgba(0, 0, 0, 0.22);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.login-card h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0 0 30px 0;
+    text-align: center;
+}
+
+.login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-group {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.login-label {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px !important;
+}
+
+.login-input {
+    width: 100% !important;
+    font-size: 1rem !important;
+    padding: 10px 14px !important;
+    border-radius: 8px !important;
+    border: 1px solid #ccc !important;
+    box-sizing: border-box !important;
+}
+
+.login-btn {
+    font-size: 1.3rem !important;
+    font-weight: 700 !important;
+    padding: 10px 45px !important;
+    background-color: green !important;
+    border: none !important;
+    color: white !important;
+    border-radius: 8px !important;
+    margin-top: 15px !important;
+    cursor: pointer;
+}
+
+.login-alert {
+    width: 100%;
+    margin-top: 20px !important;
+    font-size: 14px !important;
+    text-align: center;
+}
+
+/* ========================================================
+   ESTILOS DOS FORMULÁRIOS NO PC (> 1024px)
+   ======================================================== */
+.admin-section {
+    width: 80%;
+    margin: auto;
+    margin-top: 45px;
+    text-align: center;
+    font-size: 16pt;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.admin-section form {
+    width: 100%;
+}
+
+/* Classes da barra de filtro no PC */
+.filtro-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.filtro-bloco {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ========================================================
+   RESPONSIVIDADE: TABLETS (≤ 1024px)
+   ======================================================== */
+@media (max-width: 1024px) {
+    header { height: auto; padding: 15px 10px; }
+    header img { display: none !important; }
+    header h1 { font-size: 2.2em; }
+    header h2 { font-size: 1.6em; margin-top: 0; }
+    section { padding: 15px; gap: 15px; min-height: auto; }
+    .areaImagem { flex: 0 0 250px; }
+    .areaImagem img, .areaImagem .semImagem { width: 240px; height: 240px; }
+    .perguntas { max-height: 450px; padding: 18px 20px; gap: 10px; }
+    .tema, .titPergunta { font-size: 1.5em; }
+    .Pergunta { font-size: 1.4em; }
+    .alternativas { flex: 0 0 320px; }
+    .opcao { font-size: 1.1em; }
+    .opcao button { width: 42px; height: 42px; font-size: 0.95em; }
+    .Entrada-foto { display: none !important; }
+    .Entrada-wrapper { justify-content: center; }
+}
+
+/* ========================================================
+   RESPONSIVIDADE: SMARTPHONES (≤ 768px)
+   ======================================================== */
+@media (max-width: 768px) {
+    /* 1. REMOVE CABEÇALHO NO CELULAR */
+    header {
+        display: none !important;
+    }
+
+    /* 2. FORMULÁRIO OCUPANDO 95% DA LARGURA */
+    .admin-section {
+        width: 95% !important;
+        margin: 15px auto !important;
+        padding: 10px 5px !important;
+        box-sizing: border-box !important;
+    }
+
+    .admin-section form {
+        width: 100% !important;
+    }
+
+    /* 3. INPUTS DO FORMULÁRIO EM 100% NO CELULAR */
+    .admin-section .campo-tema,
+    .admin-section .campo-pergunta,
+    .admin-section .campo-opcao,
+    .admin-section .campo-imagem,
+    .admin-section .campo-correta,
+    .admin-section .form-control {
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 14px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 4. BARRA DE BUSCA E FILTRO EMPILHADA NO CELULAR */
+    .filtro-container {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 15px !important;
+        background-color: #fcffab;
+        padding: 15px 12px !important;
+        border-radius: 15px;
+        box-sizing: border-box !important;
+    }
+
+    .filtro-bloco {
+        flex-direction: column !important;
+        width: 100% !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+
+    .filtro-bloco span {
+        text-align: left;
+        font-size: 14pt;
+    }
+
+    .filtro-bloco select,
+    .filtro-bloco input {
+        width: 100% !important;
+        font-size: 15px !important;
+        padding: 8px !important;
+    }
+
+    .filtro-bloco button {
+        width: 100% !important;
+        padding: 10px !important;
+        font-size: 16px !important;
+    }
+
+    /* 5. BOTÕES DE NAVEGAÇÃO E AÇÃO EM COLUNA NO CELULAR */
+    .botoes-container {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 10px !important;
+    }
+
+    .botoes-container button {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 12px !important;
+        font-size: 16px !important;
+    }
+
+    .btn-salvar-mobile {
+        width: 100% !important;
+        padding: 14px !important;
+        font-size: 18px !important;
+    }
+
+    /* 6. LOGIN NO SMARTPHONE: OCUPA 95% */
+    .login-wrapper {
+        min-height: 100vh !important;
+        padding: 10px !important;
+    }
+
+    .login-card {
+        width: 95% !important;
+        padding: 25px 15px !important;
+        border-radius: 16px !important;
+    }
+
+    .login-card h2 {
+        font-size: 1.6rem !important;
+    }
+
+    .login-btn {
+        width: 100% !important;
+        padding: 12px !important;
+    }
+
+    /* Jogo no smartphone */
+    section {
+        flex-direction: column;
+        align-items: center;
+        padding: 15px 12px;
+        gap: 15px;
+        min-height: auto;
+    }
+
+    .areaImagem {
+        flex: 0 0 auto;
+        width: 100%;
+        margin-bottom: 0;
+        justify-content: center;
+    }
+
+    .areaImagem img, .areaImagem .semImagem {
+        width: 200px;
+        height: 200px;
+    }
+
+    .perguntas, .alternativas {
+        width: 100%;
+        flex: 0 0 auto;
+    }
+
+    .Avancar, .Perdeu {
+        width: 100%;
+        font-size: 1.25rem;
+        padding: 16px 20px;
+    }
+
+    .rodape-debug { display: none !important; }
+}

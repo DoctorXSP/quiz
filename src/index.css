@@ -1,34 +1,316 @@
+/* Define estilos globais aplicados ao corpo inteiro da página */
 body {
+  /* Zera as margens externas padrão do navegador para preenchimento total da tela */
   margin: 0;
+  /* Configura uma pilha de fontes modernas do sistema operacional (Apple, Windows, Android, Linux) */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  /* Melhora a nitidez e suavização tipográfica em navegadores WebKit/Safari/Chrome no macOS */
   -webkit-font-smoothing: antialiased;
+  /* Melhora a renderização de fontes no Firefox em ambientes macOS */
   -moz-osx-font-smoothing: grayscale;
-  background-color:  #ffd513de;
-  
+  /* Define a cor de fundo amarela quente com leve canal alfa */
+  background-color: #ffd513de;
 }
 
+/* Define estilos para blocos ou tags de código */
 code {
+  /* Aplica fontes monoespaçadas legíveis para trechos de código */
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Container do menu de navegação */
 .Menu1 {
-  padding-top: 10px;
+  /* Zera o espaçamento interno superior */
+  padding-top: 0;
+  /* Adiciona espaçamento interno inferior de 5px */
   padding-bottom: 5px;
+  /* Deixa a altura dinâmica de acordo com o conteúdo interno */
   height: auto;
+  /* Ocupa toda a largura horizontal disponível */
   width: 100%;
+  /* Define comportamento de exibição em bloco */
   display: block;
+  /* Alinha os botões e textos ao centro */
   text-align: center;
-  
+  /* Permite posicionamento relativo para elementos filhos absolutos */
+  position: relative;
 }
-.Menu1 .btn{
-  margin-right: 10px;
-  margin-left: 10px;
-  margin-bottom: 5px;
+
+/* ========================================================
+   DESKTOP / PC (> 768px)
+   ======================================================== */
+
+/* Oculta obrigatoriamente o botão hambúrguer e a camada escura no PC */
+.btn-hamburguer,
+.overlay-mobile {
+  /* Força a remoção visual e funcional de elementos mobile no desktop */
+  display: none !important;
+}
+
+/* Barra do menu de navegação */
+.menu-barra {
+  /* Inicia oculta por padrão no desktop */
+  display: none;
+  /* Fixa o menu no topo mesmo durante a rolagem */
+  position: fixed;
+  /* Alinha no topo absoluto da tela */
+  top: 0;
+  /* Alinha na borda esquerda da tela */
+  left: 0;
+  /* Ocupa a largura total da janela */
+  width: 100%;
+  /* Fundo preto semitransparente com 95% de opacidade */
+  background-color: rgba(30, 30, 30, 0.95);
+  /* Espaçamento interno vertical de 10px e horizontal zerado */
+  padding: 10px 0;
+  /* Garante alta prioridade de camada para sobrepor conteúdos */
+  z-index: 10000;
+  /* Aplica sombra escura suave projetada para baixo */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* Classe ativada no desktop para exibir o menu na tela */
+.menu-barra.visivel-desktop {
+  /* Torna a barra de navegação visível como bloco */
+  display: block;
+}
+
+/* Estilo padrão dos botões dentro do container .Menu1 */
+.Menu1 .btn {
+  /* Margem externa à direita para afastar os botões adjacentes */
+  margin-right: 8px;
+  /* Margem externa à esquerda para afastar os botões adjacentes */
+  margin-left: 8px;
+  /* Margem externa inferior */
+  margin-bottom: 4px;
+  /* Cor de fundo laranja-avermelhada marcante */
   background-color: orangered;
+  /* Cor do texto em branco */
   color: #FFF;
+  /* Deixa o peso da fonte em negrito acentuado */
   font-weight: 700;
-  padding: 3px 15px;
-  vertical-align: middle;
+  /* Espaçamento interno vertical de 6px e horizontal de 18px */
+  padding: 6px 18px;
+  /* Remove a borda padrão do elemento de botão */
+  border: none;
+  /* Arredonda os cantos em 6px */
+  border-radius: 6px;
+  /* Altera o cursor do mouse para mãozinha ao passar por cima */
+  cursor: pointer;
+  /* Suaviza as transições de escala e de troca de cor de fundo */
+  transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+/* Efeito ao passar o cursor do mouse sobre o botão */
+.Menu1 .btn:hover {
+  /* Escurece levemente o tom alaranjado */
+  background-color: #d83c00;
+  /* Aplica leve ampliação de 4% para feedback tátil interativo */
+  transform: scale(1.04);
+}
+
+/* ========================================================
+   RESPONSIVIDADE: SMARTPHONE (≤ 768px)
+   ======================================================== */
+@media (max-width: 768px) {
+  /* Botão Hambúrguer bem discreto, translúcido e elegante no canto */
+  .btn-hamburguer {
+    /* Ativa display flex de forma prioritária para centralizar o ícone */
+    display: flex !important;
+    /* Alinha o ícone verticalmente no centro */
+    align-items: center;
+    /* Alinha o ícone horizontalmente no centro */
+    justify-content: center;
+    /* Fixa o botão hambúrguer no topo da tela do smartphone */
+    position: fixed;
+    /* Afasta 12px da borda superior */
+    top: 12px;
+    /* Afasta 12px da borda direita */
+    right: 12px;
+    /* Largura fixa de 42px */
+    width: 42px;
+    /* Altura fixa de 42px formando um quadrado */
+    height: 42px;
+    /* Fundo preto translúcido com 65% de opacidade */
+    background-color: rgba(0, 0, 0, 0.65);
+    /* Cor amarela para o ícone interno */
+    color: #ffd513;
+    /* Borda fina e sutil semitransparente branca */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    /* Arredondamento suave dos cantos em 10px */
+    border-radius: 10px;
+    /* Tamanho do caractere/ícone do botão */
+    font-size: 22px;
+    /* Normaliza a altura da linha evitando deslocamento do ícone */
+    line-height: 1;
+    /* Cursor em ponteiro */
+    cursor: pointer;
+    /* Camada superior para ficar acima de overlays */
+    z-index: 10002;
+    /* Aplica desfoque de vidro (glassmorphism) no conteúdo que estiver atrás */
+    backdrop-filter: blur(4px);
+    /* Sombra escura discreta */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Estado do botão hambúrguer quando o menu estiver aberto */
+  .btn-hamburguer.aberto {
+    /* Muda a cor de fundo para vermelho indicando estado ativo/fechar */
+    background-color: #e60000;
+    /* Muda o ícone para branco */
+    color: #fff;
+    /* Muda a borda para branco sólido */
+    border-color: #fff;
+  }
+
+  /* Fundo semitransparente escuro ao abrir o menu */
+  .overlay-mobile {
+    /* Força exibição em bloco da camada */
+    display: block !important;
+    /* Fixa em relação à tela */
+    position: fixed;
+    /* Alinha ao topo */
+    top: 0;
+    /* Alinha à esquerda */
+    left: 0;
+    /* Cobre 100% da largura visível da janela */
+    width: 100vw;
+    /* Cobre 100% da altura visível da janela */
+    height: 100vh;
+    /* Fundo preto semitransparente com 50% de opacidade */
+    background: rgba(0, 0, 0, 0.5);
+    /* Camada posicionada logo abaixo do menu aberto */
+    z-index: 10000;
+  }
+
+  /* Menu totalmente escondido por padrão no mobile */
+  .menu-barra {
+    /* Esconde a barra do menu mobile enquanto não houver interação */
+    display: none !important;
+  }
+
+  /* Menu só se torna visível quando receber a classe aberto-mobile */
+  .menu-barra.aberto-mobile {
+    /* Força layout flexível no menu quando ativado */
+    display: flex !important;
+    /* Fixa na parte superior da tela */
+    position: fixed;
+    /* Alinha no topo */
+    top: 0;
+    /* Alinha na lateral esquerda */
+    left: 0;
+    /* Largura total */
+    width: 100%;
+    /* Fundo preto quase sólido (98% de opacidade) */
+    background-color: rgba(20, 20, 20, 0.98);
+    /* Espaçamento interno com topo maior (65px) para não colidir com o botão hambúrguer */
+    padding: 65px 20px 25px 20px;
+    /* Inclui padding e bordas no cálculo da largura total */
+    box-sizing: border-box;
+    /* Organiza os botões em uma coluna vertical */
+    flex-direction: column;
+    /* Centraliza os botões no eixo horizontal */
+    align-items: center;
+    /* Espaçamento uniforme de 12px entre os botões */
+    gap: 12px;
+    /* Camada logo acima do overlay */
+    z-index: 10001;
+    /* Linha laranja decorativa no rodapé do menu */
+    border-bottom: 3px solid orangered;
+    /* Sombra escura pronunciada sob o menu */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Botões dentro do menu no celular */
+  .Menu1 .btn {
+    /* Ocupa a largura total da coluna */
+    width: 100%;
+    /* Limita a largura máxima para não esticar excessivamente em tablets/telas largas */
+    max-width: 320px;
+    /* Remove margens laterais herdadas do desktop */
+    margin: 0;
+    /* Aumenta o espaçamento interno para melhorar o toque em telas sensíveis */
+    padding: 13px;
+    /* Tamanho de fonte aumentado para leitura mobile */
+    font-size: 16px;
+    /* Arredondamento dos cantos em 8px */
+    border-radius: 8px;
+    /* Sombra projetada sob cada botão */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  /* ========================================================
+   BOTÃO "JOGAR" NA TELA DE ENTRADA
+   ======================================================== */
+  .btn-jogar-entrada {
+    /* Fixa o botão na tela */
+    position: fixed;
+    /* Fica logo acima do painel de totais (bottom: 15px) */
+    bottom: 75px;
+    /* Posiciona no meio horizontal da tela */
+    left: 50%;
+    /* Corrige o ponto de ancoragem centralizando perfeitamente pelo centro do elemento */
+    transform: translateX(-50%);
+    /* Acima da torta (9998) e do rodapé (9999) */
+    z-index: 10000;
+    /* Tamanho de fonte destacado */
+    font-size: 1.5rem;
+    /* Negrito extra pesado */
+    font-weight: 800;
+    /* Espaçamento interno vertical e horizontal generoso */
+    padding: 14px 45px;
+    /* Borda em formato de pílula grande */
+    border-radius: 18px;
+    /* Sombra projetada escura */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+    /* Fundo verde vibrante de ação */
+    background-color: green;
+    /* Texto na cor branca */
+    color: #FFF;
+    /* Borda branca semitransparente de acabamento */
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    /* Ponteiro do mouse em formato de clique */
+    cursor: pointer;
+    /* Animações suaves para transform, cor de fundo e sombra */
+    transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    /* Transforma o texto para maiúsculas */
+    text-transform: uppercase;
+    /* Espaçamento expandido entre as letras */
+    letter-spacing: 1.5px;
+  }
+
+  /* Efeito de hover no botão jogar */
+  .btn-jogar-entrada:hover {
+    /* Escurece a cor verde ao passar o cursor */
+    background-color: #006e00;
+    /* Mantém centralização e amplia sutilmente o botão */
+    transform: translateX(-50%) scale(1.04);
+    /* Aumenta a sombra projetada */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
+  }
+
+  /* Efeito no momento do clique (pressionado) */
+  .btn-jogar-entrada:active {
+    /* Mantém centralização e reduz ligeiramente simulando clique físico */
+    transform: translateX(-50%) scale(0.96);
+  }
+
+  /* Ajustes finos do botão jogar em smartphones */
+  @media (max-width: 768px) {
+    .btn-jogar-entrada {
+      /* Ajusta a posição para 70px do rodapé */
+      bottom: 70px;
+      /* Reduz levemente a tipografia */
+      font-size: 1.3rem;
+      /* Reduz os espaçamentos internos para caber em telas menores */
+      padding: 12px 35px;
+      /* Largura automática */
+      width: auto;
+      /* Largura mínima garantida para conforto de toque */
+      min-width: 200px;
+    }
+  }
 }

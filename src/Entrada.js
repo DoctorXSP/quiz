@@ -1,144 +1,160 @@
-// Importa o arquivo de estilos CSS como um objeto (CSS Modules ou classes mapeadas)
-import styles from './interface.css';
-// Importa o React e os hooks useState (gerenciamento de estado) e useEffect (efeitos colaterais)
+// Importa o arquivo CSS com as regras globais e específicas de layout e animação[cite: 5]
+import './interface.css';
+
+// Importa o React e os hooks useState (para gerenciar estados) e useEffect (para executar efeitos colaterais)[cite: 5]
 import React, { useState, useEffect } from 'react';
-// Importa a biblioteca Axios para realizar requisições HTTP à API
+
+// Importa a biblioteca Axios para realizar chamadas assíncronas HTTP à API[cite: 5]
 import axios from 'axios';
-// Importa a imagem do Paulo Freire para ser utilizada no componente
+
+// Importa a imagem do patrono da educação Paulo Freire[cite: 5]
 import PF from './img/PaulaoFreirao.png';
-// Importa a imagem da torta para ser utilizada no componente
+
+// Importa a imagem do elemento gráfico da torta[cite: 5]
 import pie from './img/pie6.png';
 
-// Define a URL base da API: usa a variável de ambiente se configurada, ou o endereço local padrão como fallback
+// Obtém o endereço base da API a partir das variáveis de ambiente do React ou adota a porta 3042 local como padrão[cite: 5]
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3042';
 
-// Declara o componente funcional principal chamado Entrada
-const Entrada = () => {
-  // Cria a variável de estado 'totalQuestoes' e sua função atualizadora, inicializada com 0
+// Declara o componente funcional Entrada recebendo a função callback 'onIniciarJogo' via desestruturação de props[cite: 5]
+const Entrada = ({ onIniciarJogo }) => {
+  // Cria o estado para armazenar a quantidade total de questões cadastradas[cite: 5]
   const [totalQuestoes, setTotalQuestoes] = useState(0);
-  // Cria a variável de estado 'totalTemas' e sua função atualizadora, inicializada com 0
+
+  // Cria o estado para armazenar a quantidade total de categorias/temas cadastrados[cite: 5]
   const [totalTemas, setTotalTemas] = useState(0);
 
-  // Hook que executa efeitos colaterais após o componente ser montado na tela
+  // Efeito executado apenas uma vez logo após a montagem do componente no DOM[cite: 5]
   useEffect(() => {
-    // Declara uma função assíncrona interna para buscar os dados de totais no backend
+    // Declara a função assíncrona responsável por buscar as contagens de dados no servidor[cite: 5]
     const carregarTotais = async () => {
-      // Inicia bloco try para capturar eventuais falhas durante as requisições de rede
       try {
-        // Realiza uma requisição GET assíncrona para o endpoint de registros de questões
+        // Envia requisição GET à rota /registros para buscar todas as perguntas cadastradas[cite: 5]
         const resQuestoes = await axios.get(`${API_URL}/registros`);
-        // Valida se a resposta retornada pela API é realmente um array
+
+        // Verifica se a resposta recebida é uma lista válida em formato de array[cite: 5]
         if (Array.isArray(resQuestoes.data)) {
-          // Atualiza o estado com a quantidade total de questões encontradas (tamanho do array)
+          // Atualiza o total de questões com base na quantidade de itens do array retornado[cite: 5]
           setTotalQuestoes(resQuestoes.data.length);
         }
 
-        // Realiza uma requisição GET assíncrona para o endpoint de temas
+        // Envia requisição GET à rota /temas para buscar a lista de categorias disponíveis[cite: 5]
         const resTemas = await axios.get(`${API_URL}/temas`);
-        // Valida se os dados de temas retornados vêm no formato de array
+
+        // Verifica se os temas foram retornados em formato de array[cite: 5]
         if (Array.isArray(resTemas.data)) {
-          // Atualiza o estado com a quantidade total de temas encontrados (tamanho do array)
+          // Atualiza o total de temas com o tamanho do array retornado[cite: 5]
           setTotalTemas(resTemas.data.length);
         }
-      // Captura qualquer erro ocorrido nas chamadas HTTP
       } catch (erro) {
-        // Exibe no console do navegador uma mensagem de alerta com o erro detalhado
+        // Imprime mensagem no console caso ocorra qualquer erro de conexão ou de resposta HTTP[cite: 5]
         console.error('Erro ao carregar totais:', erro);
       }
     };
 
-    // Invoca a função assíncrona definida acima
+    // Invoca a função de carregamento declarada acima[cite: 5]
     carregarTotais();
-  // Array de dependências vazio: garante que o useEffect seja executado apenas uma vez na montagem
-  }, []);
+  }, []); // Array de dependências vazio garante que o efeito rode apenas na inicialização[cite: 5]
 
-  // Retorna a estrutura visual em JSX que será renderizada na interface
+  // Renderiza a estrutura visual da tela inicial[cite: 5]
   return (
-    // Fragment do React (<>) para agrupar múltiplos elementos adjacentes sem criar nós extras no DOM
-    <>
-      {/* Comentário JSX: indicação de que o container a seguir preserva a disposição original */}
-      {/* Container principal da tela inicial, aplicando classe CSS e estilos inline do módulo */}
-      <div className="Entrada" style={styles.Entrada}>
-        {/* Renderiza a imagem do Paulo Freire com classe, estilos e texto alternativo de acessibilidade */}
-        <img className="fotoEntrada" style={styles.fotoEntrada} src={PF} alt="PauloFreire" />
-        {/* Container que envolve o subtítulo da página */}
-        <div className="subTitulo">
-          {/* Título de nível 2 com o nome do evento */}
-          <h2>Semana Paulo Freire</h2>
-        {/* Fecha a div do subtítulo */}
+    // Container externo cobrindo 100% da largura e altura da janela (viewport) e ocultando barras de rolagem[cite: 5]
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+      {/* Container visual central com a identidade visual da tela de boas-vindas */}[cite: 5]
+      <div className="Entrada-wrapper">
+        {/* Renderiza a imagem ilustrativa de Paulo Freire */}[cite: 5]
+        <img className="Entrada-foto" src={PF} alt="Paulo Freire" />
+
+        {/* Agrupamento dos títulos de apresentação */}[cite: 5]
+        <div className="Entrada-textos">
+          {/* Subtítulo institucional do evento */}[cite: 5]
+          <div className="Entrada-subTitulo">
+            <h2>Semana Paulo Freire</h2>
+          </div>
+          {/* Título principal do jogo */}[cite: 5]
+          <div className="Entrada-titulo">
+            <h1>TORTA NA CARA !</h1>
+          </div>
         </div>
-        {/* Container que envolve o título principal */}
-        <div className="Titulo">
-          {/* Título principal de destaque com o nome do jogo */}
-          <h1>TORTA NA CARA !</h1>
-        {/* Fecha a div do título principal */}
+
+        {/* Div que aplica a classe de animação e exibe a imagem da torta */}[cite: 5]
+        <div className="Entrada-torta">
+          <img src={pie} alt="Torta" />
         </div>
-        {/* Container da ilustração da torta */}
-        <div className="Torta">
-          {/* Renderiza a imagem da torta com texto alternativo vazio para leitura decorativa */}
-          <img src={pie} alt="" />
-        {/* Fecha a div da imagem da torta */}
-        </div>
-      {/* Fecha a div do container principal */}
       </div>
 
-      {/* Comentário JSX: explica que a barra inferior fica flutuante e sobreposta sem quebrar o layout */}
-      {/* Container fixo (badge/rodapé flutuante) para exibir os contadores */}
-      <div
-        // Inicia o objeto de estilos inline aplicados ao container flutuante
-        style={{
-          // Fixa o elemento em relação à janela de visualização do navegador
-          position: 'fixed',
-          // Posiciona o elemento a 15px de distância da borda inferior da tela
-          bottom: '15px',
-          // Posiciona o início da caixa a 50% da largura da tela
-          left: '50%',
-          // Desloca o elemento em -50% do seu próprio tamanho no eixo X para alinhá-lo perfeitamente ao centro
-          transform: 'translateX(-50%)',
-          // Camada de sobreposição muito alta para garantir que fique visível acima de outros elementos
-          zIndex: 9999,
-          // Impede que este painel capture cliques do mouse, permitindo interagir com elementos abaixo dele
-          pointerEvents: 'none',
-          // Aplica o modelo flexbox para organizar os textos horizontalmente
-          display: 'flex',
-          // Alinha os itens flexíveis verticalmente ao centro da barra
-          alignItems: 'center',
-          // Define um espaçamento de 16px entre cada elemento interno
-          gap: '16px',
-          // Define o tamanho da fonte do texto
-          fontSize: '1.1rem',
-          // Aplica peso em negrito para facilitar a leitura
-          fontWeight: 'bold',
-          // Define a cor do texto para um cinza escuro próximo ao preto
-          color: '#222',
-          // Fundo branco semitransparente (efeito translúcido com 75% de opacidade)
-          backgroundColor: 'rgba(255, 255, 255, 0.75)',
-          // Espaçamento interno: 8px vertical e 22px horizontal
-          padding: '8px 22px',
-          // Arredonda as bordas gerando um formato de pílula
-          borderRadius: '25px',
-          // Sombra suave ao redor da barra para dar sensação de profundidade e elevação
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-          // Impede que o texto quebre em várias linhas caso o espaço seja reduzido
-          whiteSpace: 'nowrap'
-        // Fecha o objeto de estilos inline
+      {/* BOTÃO JOGAR BLINDADO: Estilos embutidos com Z-INDEX 99999 (impossível ficar oculto) */}[cite: 5]
+      <button
+        // Define explicitamente o tipo do botão HTML[cite: 5]
+        type="button"
+        // Evento disparado quando o usuário clica no botão[cite: 5]
+        onClick={() => {
+          // Checa se a propriedade 'onIniciarJogo' recebida é realmente uma função válida[cite: 5]
+          if (typeof onIniciarJogo === 'function') {
+            // Executa a função passada pelo componente pai para dar início à partida[cite: 5]
+            onIniciarJogo();
+          } else {
+            // Emite aviso no console caso a função de callback não tenha sido informada[cite: 5]
+            console.warn('Função onIniciarJogo não informada pelo index.js!');
+          }
         }}
-      // Fecha a abertura da tag div do rodapé flutuante
+        // Estilização inline para fixação, centralização e sobreposição de tela[cite: 5]
+        style={{
+          position: 'fixed',                              // Fixa o botão na janela[cite: 5]
+          bottom: '80px',                                 // Posiciona a 80px do fundo da tela[cite: 5]
+          left: '50%',                                    // Move o ponto de origem para o centro horizontal[cite: 5]
+          transform: 'translateX(-50%)',                  // Corrige o alinhamento centralizando pelo meio do elemento[cite: 5]
+          zIndex: 99999,                                  // Garante prioridade máxima na camada visual (sobre outros elementos)[cite: 5]
+          pointerEvents: 'auto',                          // Garante que o botão seja sempre clicável[cite: 5]
+          fontSize: '1.6rem',                             // Define tamanho ampliado para a tipografia[cite: 5]
+          fontWeight: 800,                                // Define peso de fonte extra em negrito[cite: 5]
+          padding: '14px 45px',                           // Define espaçamento interno do botão[cite: 5]
+          borderRadius: '20px',                           // Arredonda os cantos da borda[cite: 5]
+          backgroundColor: '#28a745',                     // Aplica tom verde de destaque[cite: 5]
+          color: '#ffffff',                               // Define a cor do texto para branco[cite: 5]
+          border: '3px solid #ffffff',                    // Aplica borda branca grossa de acabamento[cite: 5]
+          boxShadow: '0 6px 20px rgba(0, 0, 0, 0.6)',     // Cria sombra projetada escura[cite: 5]
+          cursor: 'pointer',                              // Transforma o ponteiro do mouse em mãozinha ao passar por cima[cite: 5]
+          letterSpacing: '2px',                           // Espaçamento entre as letras[cite: 5]
+          textTransform: 'uppercase'                      // Converte todo o texto para letras maiúsculas[cite: 5]
+        }}
       >
-        {/* Exibe o rótulo com ícone e o valor numérico do total de questões armazenado no estado */}
+        JOGAR
+      </button>
+
+      {/* Rodapé flutuante com contadores de dados */}[cite: 5]
+      <div
+        // Estilização inline do badge inferior de contagem[cite: 5]
+        style={{
+          position: 'fixed',                                // Fixa o painel de status[cite: 5]
+          bottom: '15px',                                   // Posiciona próximo ao rodapé da página[cite: 5]
+          left: '50%',                                      // Centraliza no eixo horizontal[cite: 5]
+          transform: 'translateX(-50%)',                    // Ajusta o alinhamento fino central[cite: 5]
+          zIndex: 9999,                                     // Mantém acima da camada de fundo[cite: 5]
+          pointerEvents: 'none',                            // Impede que capture cliques, evitando bloquear elementos de trás[cite: 5]
+          display: 'flex',                                  // Disposição em linha flexível[cite: 5]
+          alignItems: 'center',                             // Alinha os textos verticalmente[cite: 5]
+          gap: '16px',                                      // Espaçamento entre os contadores[cite: 5]
+          fontSize: '1.05rem',                              // Tamanho de leitura das estatísticas[cite: 5]
+          fontWeight: 'bold',                               // Texto em negrito[cite: 5]
+          color: '#222',                                    // Cor escura para leitura limpa[cite: 5]
+          backgroundColor: 'rgba(255, 255, 255, 0.85)',     // Fundo branco semitransparente[cite: 5]
+          padding: '8px 22px',                              // Espaçamento interno da caixa[cite: 5]
+          borderRadius: '25px',                             // Borda em formato de pílula[cite: 5]
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.25)',       // Sombra suave sob a pílula[cite: 5]
+          whiteSpace: 'nowrap'                              // Impede que o texto quebre linhas[cite: 5]
+        }}
+      >
+        {/* Exibe o número total de questões recuperadas do banco */}[cite: 5]
         <span>📚 Total de Questões: {totalQuestoes}</span>
-        {/* Exibe um separador visual em formato de barra vertical entre as duas métricas */}
+        {/* Separador vertical entre os contadores */}[cite: 5]
         <span>|</span>
-        {/* Exibe o rótulo com ícone e o valor numérico do total de temas armazenado no estado */}
+        {/* Exibe o total de temas cadastrados */}[cite: 5]
         <span>🏷️ Total de Temas: {totalTemas}</span>
-      {/* Fecha a div do container flutuante */}
       </div>
-    {/* Fecha o Fragment do React */}
-    </>
-  // Fecha o bloco de retorno JSX do componente
+    </div>
   );
-// Fecha a função do componente Entrada
 };
 
-// Exporta o componente Entrada como padrão para que possa ser importado em outros arquivos da aplicação
+// Exporta o componente Entrada como padrão para ser usado na navegação da tela principal[cite: 5]
 export default Entrada;

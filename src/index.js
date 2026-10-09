@@ -1,82 +1,148 @@
-
-// Importa a biblioteca React e os hooks useState e useEffect 
+// Importa o React e os hooks useState (controle de estados) e useEffect (efeitos colaterais do ciclo de vida)[cite: 8]
 import React, { useState, useEffect } from 'react';
-// Importa ReactDOM para renderizar o componente na raiz do HTML 
+
+// Importa o cliente ReactDOM para inicializar e renderizar a aplicação na árvore DOM (React 18+)[cite: 8]
 import ReactDOM from 'react-dom/client';
-// Importa o arquivo de estilos CSS para o índice 
+
+// Importa a folha de estilos CSS global da aplicação[cite: 8]
 import './index.css';
-// Importa os componentes de interface que serão exibidos 
-import Interface from './interface'; //Tela do jogo
-import Inserir from './Inserir'; //Tela para inserir perguntas
-import Entrada from './Entrada'; //Tela do Titulo
-import Alterar from './alterar'; //Tela par alterar as peguntas
+
+// Importa a tela principal da partida do jogo[cite: 8]
+import Interface from './interface';
+
+// Importa o componente de formulário para inserção manual de novas perguntas[cite: 8]
+import Inserir from './Inserir';
+
+// Importa a tela inicial de entrada com animações e dados de resumo[cite: 8]
+import Entrada from './Entrada';
+
+// Importa a tela administrativa para alteração e navegação de perguntas cadastradas[cite: 8]
+import Alterar from './alterar';
+
+// Importa a funcionalidade de geração de questões automática com inteligência artificial[cite: 8]
 import GerarIA from './GerarIA';
 
-// Define o componente funcional App 
+// Importa o componente para exportação e restauração de dados via arquivo ZIP[cite: 8]
+import Backup from './Backup'; // Novo módulo de Backup[cite: 8]
+
+// Declara o componente funcional raiz da aplicação[cite: 8]
 function App() {
-  // Define a variável de estado 'pagina' para armazenar a página atual, iniciando com 'Entrada'. Use 'setPagina' para alterá-la.
+  // Estado que armazena a tela ativa no momento (inicializa na tela 'Entrada')[cite: 8]
   const [pagina, setPagina] = useState('Entrada');
-  // Define a variável de estado 'isMenuVisivel' para controlar a visibilidade do menu, iniciando como falso. Use 'setIsMenuVisivel' para alterá-la.
+
+  // Estado booleano que controla a visibilidade do menu suspenso em telas desktop[cite: 8]
   const [isMenuVisivel, setIsMenuVisivel] = useState(false);
 
-  // Define a função 'lidarComCliqueNoBotao' que altera a página exibida quando um botão do menu é clicado.
+  // Estado booleano que controla se o menu gaveta/hambúrguer está aberto em dispositivos móveis[cite: 8]
+  const [menuAbertoMobile, setMenuAbertoMobile] = useState(false);
+
+  // Função auxiliar para mudar a tela atual e garantir o fechamento do menu mobile[cite: 8]
   const lidarComCliqueNoBotao = (nomeDaPagina) => {
-    // Atualiza a variável de estado 'pagina' com o nome da página fornecido.
+    // Atualiza a tela a ser renderizada[cite: 8]
     setPagina(nomeDaPagina);
+    // Fecha o menu no mobile após a escolha da opção[cite: 8]
+    setMenuAbertoMobile(false);
   };
 
-  // Define um efeito que é executado após a renderização do componente.
+  // Efeito responsável por monitorar o ponteiro do mouse no desktop para exibir o menu no topo[cite: 8]
   useEffect(() => {
-    // Define a função 'lidarComMovimentoDoMouse' que verifica se o mouse está próximo do topo da página.
+    // Função disparada a cada movimento do cursor na janela[cite: 8]
     const lidarComMovimentoDoMouse = (e) => {
-      // Se a coordenada Y do mouse for menor que 50px (mouse próximo do topo).
-      if (e.clientY < 50) {
-        // Exibe o menu definindo 'isMenuVisivel' como verdadeiro.
-        setIsMenuVisivel(true);
-      } else {
-        // Esconde o menu definindo 'isMenuVisivel' como falso.
-        setIsMenuVisivel(false);
+      // Aplica a lógica apenas se a largura da janela for de computador/desktop (> 768px)[cite: 8]
+      if (window.innerWidth > 768) {
+        // Se a posição vertical do cursor (clientY) estiver a menos de 50px do topo, exibe o menu[cite: 8]
+        if (e.clientY < 50) {
+          setIsMenuVisivel(true);
+        } else {
+          // Caso contrário, oculta o menu quando o mouse se afasta do topo[cite: 8]
+          setIsMenuVisivel(false);
+        }
       }
     };
 
-    // Adiciona um ouvinte de evento para o movimento do mouse no objeto global 'window'.
+    // Registra o ouvinte de evento global de movimento do mouse[cite: 8]
     window.addEventListener('mousemove', lidarComMovimentoDoMouse);
 
-    // Função de limpeza que é executada quando o componente é desmontado.
+    // Função de limpeza: remove o ouvinte ao desmontar o componente para evitar memory leaks[cite: 8]
     return () => {
-      // Remove o ouvinte de evento para o movimento do mouse para evitar vazamentos de memória.
       window.removeEventListener('mousemove', lidarComMovimentoDoMouse);
     };
-  // O array de dependências vazio significa que o efeito é executado apenas uma vez após a renderização inicial.
-  }, []);
+  }, []); // Array de dependências vazio garante que o listener seja configurado apenas uma vez[cite: 8]
 
-  // Retorna a estrutura JSX do componente para ser renderizada.
+  // Renderização do layout principal da aplicação[cite: 8]
   return (
-    // Cria um contêiner div com a classe 'Menu1'.
+    // Container principal envolvendo a navegação e o conteúdo dinâmico[cite: 8]
     <div className='Menu1'>
-      {/* Cria um contêiner div com estilo embutido para controlar a visibilidade do menu.*/}
-      <div style={{ display: isMenuVisivel ? 'block' : 'none' }}>
-        {/*// Cria botões do menu que, ao serem clicados, chamam 'lidarComCliqueNoBotao' com o nome da página correspondente.*/}
+      {/* Botão Hambúrguer no smartphone */}
+      <button 
+        type="button"
+        // Alterna dinamicamente a classe 'aberto' dependendo do estado do menu[cite: 8]
+        className={`btn-hamburguer ${menuAbertoMobile ? 'aberto' : ''}`}
+        // Inverte o estado booleano ao ser clicado (abre/fecha)[cite: 8]
+        onClick={() => setMenuAbertoMobile(!menuAbertoMobile)}
+        aria-label="Abrir menu"
+      >
+        {/* Mostra ícone de fechar (✕) se aberto ou hambúrguer (☰) se fechado */}
+        {menuAbertoMobile ? '✕' : '☰'}
+      </button>
+
+      {/* Camada para fechar ao tocar fora no mobile */}
+      {/* Exibe o fundo escurecido apenas quando o menu mobile estiver visível */}
+      {menuAbertoMobile && (
+        <div 
+          className="overlay-mobile" 
+          // Fecha o menu ao clicar fora dele[cite: 8]
+          onClick={() => setMenuAbertoMobile(false)}
+        />
+      )}
+
+      {/* Barra de Menus */}
+      {/* Aplica classes condicionais para exibição no desktop (ao passar o mouse) e no mobile (ao abrir) */}
+      <div className={`menu-barra ${isMenuVisivel ? 'visivel-desktop' : ''} ${menuAbertoMobile ? 'aberto-mobile' : ''}`}>
+        {/* Botão para iniciar o jogo abrindo a tela 'Interface' */}
         <button className='btn' onClick={() => lidarComCliqueNoBotao('Interface')}>INICIAR JOGO</button>
+        {/* Botão para voltar à tela inicial/pausa 'Entrada' */}
+        <button className='btn' onClick={() => lidarComCliqueNoBotao('Entrada')}>PAUSAR</button>
+        {/* Botão para abrir o formulário de cadastro manual de perguntas */}
         <button className='btn' onClick={() => lidarComCliqueNoBotao('Inserir')}>INSERIR PERGUNTAS</button>
+        {/* Botão para abrir o módulo de criação de questões com IA */}
         <button className='btn' onClick={() => lidarComCliqueNoBotao('GerarIA')}>INSERIR COM IA</button>
+        {/* Botão para abrir o painel de edição e consulta de perguntas existentes */}
         <button className='btn' onClick={() => lidarComCliqueNoBotao('Alterar')}>ALTERAR PERGUNTAS</button>
-                <button className='btn' onClick={() => lidarComCliqueNoBotao('Entrada')}>PAUSAR</button>
+        {/* Botão para abrir o módulo de backup e restauração */}
+        <button className='btn' onClick={() => lidarComCliqueNoBotao('Backup')}>BACKUP</button>
+        
       </div>
 
-      {/* Renderiza condicionalmente o componente correspondente à página atual.*/}
+      {/* Renderização condicional das Telas */}
+      {/* Exibe a tela da partida quando a página ativa for 'Interface' */}
       {pagina === 'Interface' && <Interface />}
+
+      {/* Exibe a tela de boas-vindas repassando a função para começar a partida via prop */}
+      {pagina === 'Entrada' && (
+        <Entrada onIniciarJogo={() => lidarComCliqueNoBotao('Interface')} />
+      )}
+
+      {/* Exibe a tela de inserção manual quando selecionada */}
       {pagina === 'Inserir' && <Inserir />}
+
+      {/* Exibe o gerador de questões via IA quando selecionado */}
       {pagina === 'GerarIA' && <GerarIA />}
+
+      {/* Exibe a tela de alteração e listagem de questões quando selecionada */}
       {pagina === 'Alterar' && <Alterar />}
-      {pagina === 'Entrada' && <Entrada />}
+
+      {/* Exibe a tela de backup quando selecionada */}
+      {pagina === 'Backup' && <Backup />}
+     
     </div>
   );
 }
 
-// Cria a raiz do React para renderizar o componente na div com id 'root'.
+// Localiza o elemento com id 'root' no HTML e cria o nó raiz de renderização do React[cite: 8]
 const root = ReactDOM.createRoot(document.getElementById('root'));
-// Renderiza o componente principal App dentro da raiz no modo estrito.
+
+// Renderiza o componente App envolvido pelo StrictMode para verificação de boas práticas em desenvolvimento[cite: 8]
 root.render(
   <React.StrictMode>
     <App />

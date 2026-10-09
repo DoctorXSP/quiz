@@ -1,148 +1,152 @@
-// Importa o arquivo de folhas de estilo CSS da aplicação
-import estilos from './interface.css';
+// Importa o arquivo de estilo CSS com as regras visuais da interface[cite: 9]
+import './interface.css';
 
-// Importa os hooks useState e React da biblioteca React para manipulação de estado
+// Importa o React e o hook useState para criação e controle de estados locais[cite: 9]
 import React, { useState } from 'react';
 
-// Importa a biblioteca Axios para realizar chamadas HTTP ao servidor
+// Importa o Axios para realizar requisições HTTP assíncronas para o backend[cite: 9]
 import axios from 'axios';
 
-// Importa os componentes Form, Button e Alert da biblioteca React-Bootstrap
+// Importa componentes visuais reutilizáveis do React-Bootstrap[cite: 9]
 import { Form, Button, Alert } from 'react-bootstrap';
 
-// Importa a imagem estática da torta usada no cabeçalho
+// Importa a imagem estática do logotipo 'torta'[cite: 9]
 import imagemTorta from './img/torta.webp';
 
-// Importa a imagem GIF de Paulo Freire usada no cabeçalho
+// Importa a imagem em GIF de Paulo Freire[cite: 9]
 import imagemPaulo from './img/pauloFreire.gif';
 
-// Componente principal Inserir
+// Declara o componente funcional Inserir[cite: 9]
 const Inserir = () => {
-  // Estado para armazenar o valor digitado no campo de usuário do formulário de login
+  // Estado para armazenar o valor digitado no campo de usuário do login[cite: 9]
   const [usuario, setUsuario] = useState('');
 
-  // Estado para armazenar a senha digitada no formulário de login
+  // Estado para armazenar o valor digitado no campo de senha do login[cite: 9]
   const [senha, setSenha] = useState('');
 
-  // Estado booleano que indica se o usuário autenticou com sucesso (inicialmente falso)
+  // Estado booleano que define se o usuário está logado e pode ver o formulário[cite: 9]
   const [autenticado, setAutenticado] = useState(false);
 
-  // Estado para exibir mensagem de erro na tela de login
+  // Estado para guardar a mensagem de erro em caso de credenciais inválidas[cite: 9]
   const [mensagemErroLogin, setMensagemErroLogin] = useState('');
 
-  // Estado para armazenar o tema da questão no cadastro
+  // Estado para armazenar o tema da nova questão[cite: 9]
   const [tema, setTema] = useState('');
 
-  // Estado para armazenar o texto da pergunta
+  // Estado para armazenar o enunciado da pergunta[cite: 9]
   const [pergunta, setPergunta] = useState('');
 
-  // Estado para armazenar o texto da opção A
+  // Estado para o texto da alternativa A[cite: 9]
   const [opcaoA, setOpcaoA] = useState('');
 
-  // Estado para armazenar o texto da opção B
+  // Estado para o texto da alternativa B[cite: 9]
   const [opcaoB, setOpcaoB] = useState('');
 
-  // Estado para armazenar o texto da opção C
+  // Estado para o texto da alternativa C[cite: 9]
   const [opcaoC, setOpcaoC] = useState('');
 
-  // Estado para armazenar o texto da opção D
+  // Estado para o texto da alternativa D[cite: 9]
   const [opcaoD, setOpcaoD] = useState('');
 
-  // Estado para armazenar o arquivo binário da imagem selecionada
+  // Estado para guardar o arquivo binário da imagem selecionada[cite: 9]
   const [arquivoImagem, setArquivoImagem] = useState(null);
 
-  // Estado para armazenar qual alternativa é a correta (A, B, C ou D)
+  // Estado para armazenar a letra da alternativa correta ('A', 'B', 'C' ou 'D')[cite: 9]
   const [alternativaCorreta, setAlternativaCorreta] = useState('');
 
-  // Estado para armazenar mensagem de feedback para o usuário (sucesso ou erro no cadastro)
+  // Estado para guardar mensagens de sucesso ou erro do cadastro[cite: 9]
   const [mensagemFeedback, setMensagemFeedback] = useState('');
 
-  // Estado para armazenar a URL de pré-visualização da imagem enviada
+  // Estado para a URL temporária de pré-visualização da imagem no navegador[cite: 9]
   const [urlPreviaImagem, setUrlPreviaImagem] = useState(null);
 
-  // Estado para forçar a limpeza do campo de arquivo gerando uma chave aleatória
+  // Estado com valor aleatório usado na prop 'key' do input file para forçar sua limpeza visual[cite: 9]
   const [chaveArquivo, setChaveArquivo] = useState(Math.random().toString());
 
-  // Função responsável por validar as credenciais fornecidas no formulário de login
+  // Função que lida com o envio do formulário de autenticação[cite: 9]
   const manipularEnvioLogin = (evento) => {
-    // Impede o recarregamento automático da página ao submeter o formulário
+    // Previne o recarregamento automático da página[cite: 9]
     evento.preventDefault();
 
-    // Compara o usuário e senha informados com as credenciais autorizadas
+    // Valida se as credenciais correspondem ao login administrativo padrão[cite: 9]
     if (usuario === 'etecembu' && senha === 'etec@241') {
-      // Autoriza o acesso mudando o estado para verdadeiro
+      // Define status de autenticado como verdadeiro liberando a tela[cite: 9]
       setAutenticado(true);
-      // Limpa qualquer mensagem de erro que estivesse ativa
+      // Limpa eventuais mensagens de erro anteriores[cite: 9]
       setMensagemErroLogin('');
     } else {
-      // Exibe mensagem de credenciais inválidas caso estejam incorretas
+      // Define a mensagem de erro caso usuário ou senha estejam incorretos[cite: 9]
       setMensagemErroLogin('Usuário ou senha inválidos!');
     }
   };
 
-  // Função executada quando o usuário seleciona um arquivo de imagem no input file
+  // Função disparada quando um arquivo é selecionado no input file[cite: 9]
   const manipularMudancaImagem = (evento) => {
-    // Captura o primeiro arquivo selecionado pelo usuário
+    // Pega o primeiro arquivo da seleção[cite: 9]
     const arquivo = evento.target.files[0];
 
-    // Verifica se o arquivo foi realmente selecionado
+    // Se houver arquivo selecionado[cite: 9]
     if (arquivo) {
-      // Salva o arquivo no estado
+      // Guarda o arquivo binário no estado[cite: 9]
       setArquivoImagem(arquivo);
-      // Gera e salva a URL temporária para pré-visualização da imagem na tela
+
+      // Cria uma URL temporária de objeto para exibir a prévia visual[cite: 9]
       setUrlPreviaImagem(URL.createObjectURL(arquivo));
     }
   };
 
-  // Função responsável por enviar os dados do formulário de cadastro para a API
+  // Função assíncrona responsável pelo envio e gravação do formulário de cadastro[cite: 9]
   const manipularEnvioCadastro = async (evento) => {
-    // Evita o recarregamento padrão da página ao enviar o formulário
+    // Impede o envio tradicional do formulário pelo navegador[cite: 9]
     evento.preventDefault();
 
-    // Valida se o usuário anexou a imagem necessária
+    // Valida se uma imagem foi selecionada obrigatoriamente[cite: 9]
     if (!arquivoImagem) {
-      // Define a mensagem avisando sobre a necessidade da imagem
+      // Alerta o usuário caso falte o anexo da imagem[cite: 9]
       setMensagemFeedback('Selecione uma imagem antes de enviar.');
-      // Interrompe a execução da função
       return;
     }
 
-    // Cria um objeto FormData para enviar texto e arquivo na mesma requisição HTTP
+    // Instancia objeto FormData para permitir empacotamento multipart (texto e arquivos)[cite: 9]
     const dadosFormulario = new FormData();
 
-    // Anexa o arquivo de imagem aos dados do formulário
+    // Anexa a imagem binária com a chave esperada pelo Multer no backend[cite: 9]
     dadosFormulario.append('imagem', arquivoImagem);
 
-    // Anexa o tema da questão
+    // Anexa o tema da questão[cite: 9]
     dadosFormulario.append('tema', tema);
 
-    // Anexa o texto da pergunta
+    // Anexa a pergunta[cite: 9]
     dadosFormulario.append('pergunta', pergunta);
 
-    // Anexa as opções A, B, C e D
+    // Anexa a alternativa A[cite: 9]
     dadosFormulario.append('A', opcaoA);
+
+    // Anexa a alternativa B[cite: 9]
     dadosFormulario.append('B', opcaoB);
+
+    // Anexa a alternativa C[cite: 9]
     dadosFormulario.append('C', opcaoC);
+
+    // Anexa a alternativa D[cite: 9]
     dadosFormulario.append('D', opcaoD);
 
-    // Anexa qual alternativa é a correta
+    // Anexa a indicação da resposta correta[cite: 9]
     dadosFormulario.append('correta', alternativaCorreta);
 
     try {
-      // Envia os dados via POST para a rota de inserção da API na porta 3042
+      // Realiza requisição POST ao endpoint /insert da API local[cite: 9]
       await axios.post('http://localhost:3042/insert', dadosFormulario, {
         headers: {
-          // Define o tipo de conteúdo como multipart/form-data para envio de arquivos
-          'Content-Type': 'multipart/form-data',
-          // Informa que aceita resposta em formato JSON
-          Accept: 'application/json'
+          'Content-Type': 'multipart/form-data', // Especifica cabeçalho de upload de formulário[cite: 9]
+          Accept: 'application/json'             // Indica expectativa de resposta em formato JSON[cite: 9]
         }
       });
 
-      // Define a mensagem informando sucesso no cadastro
+      // Define a mensagem de sucesso para exibição na tela[cite: 9]
       setMensagemFeedback('Registro inserido com sucesso!');
 
-      // Limpa os campos do formulário após a inserção bem-sucedida
+      // Limpa os campos do formulário para o próximo cadastro[cite: 9]
       setTema('');
       setPergunta('');
       setOpcaoA('');
@@ -152,187 +156,154 @@ const Inserir = () => {
       setArquivoImagem(null);
       setUrlPreviaImagem(null);
       setAlternativaCorreta('');
+
+      // Gera nova chave para desmontar e limpar o campo de arquivo (input type file) no DOM[cite: 9]
       setChaveArquivo(Math.random().toString());
 
-      // Agenda a limpeza automática da mensagem de feedback após 15 segundos
+      // Configura temporizador para remover a mensagem de feedback após 15 segundos[cite: 9]
       setTimeout(() => setMensagemFeedback(''), 15000);
     } catch (erro) {
-      // Captura erros da requisição e exibe a mensagem retornada pelo servidor ou padrão
+      // Trata exceções exibindo mensagem detalhada retornada da API ou erro genérico[cite: 9]
       setMensagemFeedback(`Erro ao inserir registro! ${erro.response?.data?.message || erro.message}`);
     }
   };
 
-  // Renderização da interface
+  // Renderização do layout da tela[cite: 9]
   return (
-    // Elemento que engloba toda a página preservando a classe CSS original
     <div className="Interface">
-      {/* Cabeçalho padrão com o tema do evento e as imagens originais */}
+      {/* Cabeçalho da aplicação */}
       <header>
-        {/* Imagem da torta posicionada à esquerda */}
-        <img className="imgFoto" style={estilos.imgFoto} src={imagemTorta} alt="Torta na Cara" />
-        {/* Bloco de títulos da gincana */}
-        <div>
+        <img className="imgFoto" src={imagemTorta} alt="Torta na Cara" />
+        <div className="tituloHeader">
           <h1>TORTA NA CARA</h1>
           <h2>Semana Paulo Freire</h2>
         </div>
-        {/* Imagem do patrono Paulo Freire à direita */}
         <img className="imgPaulo" src={imagemPaulo} alt="Paulo Freire" />
       </header>
 
-      {/* Seção principal mantendo os estilos exatos de layout e alinhamento da tela */}
-      <section
-        style={{
-          width: '80%',
-          margin: 'auto',
-          marginTop: '45px',
-          textAlign: 'center',
-          fontSize: '16pt',
-          fontWeight: 'bold'
-        }}
-      >
-        {/* Renderização condicional: se NÃO estiver autenticado, exibe o formulário de login */}
-        {!autenticado ? (
-          // Formulário de Login
-          <Form onSubmit={manipularEnvioLogin}>
-            {/* Título de identificação do painel de login */}
-            <h2 style={{ marginBottom: 25 }}>Acesso ao Cadastro</h2>
+      {/* Exibição condicional: se não autenticado exibe login, se autenticado exibe o cadastro[cite: 9] */}
+      {!autenticado ? (
+        <div className="login-wrapper">
+          <div className="login-card">
+            <h2>Acesso ao Cadastro</h2>
+            {/* Formulário de autenticação[cite: 9] */}
+            <Form onSubmit={manipularEnvioLogin} className="login-form">
+              {/* Campo de usuário[cite: 9] */}
+              <Form.Group controlId="formUsuario" className="login-group">
+                <Form.Label className="login-label">Usuário:</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={usuario}
+                  onChange={(e) => setUsuario(e.target.value)}
+                  placeholder="Informe seu usuário"
+                  className="login-input"
+                />
+              </Form.Group>
 
-            {/* Grupo de entrada para o nome de usuário */}
-            <Form.Group controlId="formUsuario" style={{ marginBottom: 15 }}>
-              <Form.Label>Usuário:</Form.Label>
-              <Form.Control
-                type="text"
-                value={usuario}
-                onChange={(e) => setUsuario(e.target.value)}
-                placeholder="Informe seu usuário"
-                style={{ width: '50%', margin: 'auto', padding: 5, fontSize: 14 }}
-              />
-            </Form.Group>
+              {/* Campo de senha[cite: 9] */}
+              <Form.Group controlId="formSenha" className="login-group">
+                <Form.Label className="login-label">Senha:</Form.Label>
+                <Form.Control
+                  type="password"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  placeholder="Informe sua senha"
+                  className="login-input"
+                />
+              </Form.Group>
 
-            {/* Grupo de entrada para a senha */}
-            <Form.Group controlId="formSenha" style={{ marginBottom: 20 }}>
-              <Form.Label>Senha:</Form.Label>
-              <Form.Control
-                type="password"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                placeholder="Informe sua senha"
-                style={{ width: '50%', margin: 'auto', padding: 5, fontSize: 14 }}
-              />
-            </Form.Group>
+              {/* Botão para submissão do login[cite: 9] */}
+              <Button type="submit" className="login-btn">
+                Entrar
+              </Button>
 
-            {/* Botão para submeter os dados de acesso */}
-            <Button
-              variant="primary"
-              type="submit"
-              style={{ fontSize: 22, padding: '5px 25px', color: 'white', backgroundColor: 'Green', border: 'none' }}
-            >
-              Entrar
-            </Button>
-
-            {/* Alerta de erro caso o login ou senha estejam incorretos */}
-            {mensagemErroLogin && (
-              <Alert variant="danger" style={{ width: '50%', margin: '20px auto 0', fontSize: 14 }}>
-                {mensagemErroLogin}
-              </Alert>
-            )}
-          </Form>
-        ) : (
-          // Formulário de Cadastro (exibido somente após o login com sucesso)
+              {/* Mensagem de alerta em caso de falha de login[cite: 9] */}
+              {mensagemErroLogin && (
+                <Alert variant="danger" className="login-alert">
+                  {mensagemErroLogin}
+                </Alert>
+              )}
+            </Form>
+          </div>
+        </div>
+      ) : (
+        // Painel liberado após autenticação com sucesso[cite: 9]
+        <section className="admin-section">
+          {/* Formulário de cadastro de nova questão[cite: 9] */}
           <Form onSubmit={manipularEnvioCadastro}>
-            {/* Grupo de entrada do Tema */}
+            {/* Campo para preenchimento do tema da pergunta[cite: 9] */}
             <Form.Group controlId="formTema" style={{ marginBottom: 15 }}>
               <Form.Label>Tema:</Form.Label>
               <Form.Control
                 type="text"
                 value={tema}
                 onChange={(e) => setTema(e.target.value)}
+                className="campo-tema"
                 style={{ width: '50%', padding: 5, fontSize: 12, margin: 'auto' }}
               />
             </Form.Group>
 
-            {/* Grupo de entrada da Pergunta */}
+            {/* Campo em textarea para redação do enunciado da pergunta[cite: 9] */}
             <Form.Group controlId="formPergunta">
               <Form.Label>Pergunta:</Form.Label>
               <Form.Control
                 as="textarea"
                 value={pergunta}
                 onChange={(e) => setPergunta(e.target.value)}
+                className="campo-pergunta"
                 style={{ width: '53%', height: 60, padding: 5, fontSize: 12, margin: 'auto' }}
               />
             </Form.Group>
 
-            {/* Grupo de entrada da Alternativa A */}
-            <Form.Group controlId="formA">
-              <Form.Label>A:</Form.Label>
-              <Form.Control
-                type="text"
-                value={opcaoA}
-                onChange={(e) => setOpcaoA(e.target.value)}
-                style={{ width: '60%', padding: 5, fontSize: 12, margin: 'auto' }}
-              />
-            </Form.Group>
+            {/* Mapeamento iterativo para renderizar os campos das opções A, B, C e D[cite: 9] */}
+            {['A', 'B', 'C', 'D'].map((letra, index) => {
+              // Vetor que mapeia os valores de cada estado de alternativa[cite: 9]
+              const vals = [opcaoA, opcaoB, opcaoC, opcaoD];
+              // Vetor que mapeia as funções atualizadoras de cada estado[cite: 9]
+              const setters = [setOpcaoA, setOpcaoB, setOpcaoC, setOpcaoD];
+              return (
+                <Form.Group key={letra} controlId={`form${letra}`}>
+                  <Form.Label>{letra}:</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={vals[index]}
+                    onChange={(e) => setters[index](e.target.value)}
+                    className="campo-opcao"
+                    style={{ width: '60%', padding: 5, fontSize: 12, margin: 'auto' }}
+                  />
+                </Form.Group>
+              );
+            })}
 
-            {/* Grupo de entrada da Alternativa B */}
-            <Form.Group controlId="formB">
-              <Form.Label>B:</Form.Label>
-              <Form.Control
-                type="text"
-                value={opcaoB}
-                onChange={(e) => setOpcaoB(e.target.value)}
-                style={{ width: '60%', padding: 5, fontSize: 12, margin: 'auto' }}
-              />
-            </Form.Group>
-
-            {/* Grupo de entrada da Alternativa C */}
-            <Form.Group controlId="formC">
-              <Form.Label>C:</Form.Label>
-              <Form.Control
-                type="text"
-                value={opcaoC}
-                onChange={(e) => setOpcaoC(e.target.value)}
-                style={{ width: '60%', padding: 5, fontSize: 12, margin: 'auto' }}
-              />
-            </Form.Group>
-
-            {/* Grupo de entrada da Alternativa D */}
-            <Form.Group controlId="formD">
-              <Form.Label>D:</Form.Label>
-              <Form.Control
-                type="text"
-                value={opcaoD}
-                onChange={(e) => setOpcaoD(e.target.value)}
-                style={{ width: '60%', padding: 5, fontSize: 12, margin: 'auto' }}
-              />
-            </Form.Group>
-
-            {/* Grupo de upload do arquivo de imagem */}
+            {/* Campo para anexar a foto da questão[cite: 9] */}
             <Form.Group controlId="formImagem">
               <Form.Label>Imagem:</Form.Label>
               <Form.Control
-                key={chaveArquivo}
+                key={chaveArquivo} // Chave dinâmica que força a limpeza do input quando atualizada[cite: 9]
                 type="file"
                 onChange={manipularMudancaImagem}
+                className="campo-imagem"
                 style={{ width: '60%', margin: 'auto' }}
               />
             </Form.Group>
 
-            {/* Exibe a pré-visualização da imagem se houver arquivo selecionado */}
+            {/* Exibe a foto selecionada em formato circular se houver arquivo carregado[cite: 9] */}
             {urlPreviaImagem && (
               <img
                 src={urlPreviaImagem}
                 alt="Pré-visualização"
-                style={{ height: '200px', width: '200px', borderRadius: 100, margin: '15px auto', display: 'block' }}
+                style={{ height: '200px', width: '200px', borderRadius: 100, margin: '15px auto', display: 'block', objectFit: 'cover' }}
               />
             )}
 
-            {/* Menu suspenso para escolha da alternativa correta */}
+            {/* Seleção da alternativa correta[cite: 9] */}
             <Form.Group controlId="formCorreta">
               <Form.Label>Correta:</Form.Label>
               <Form.Control
                 as="select"
                 value={alternativaCorreta}
                 onChange={(e) => setAlternativaCorreta(e.target.value)}
+                className="campo-correta"
                 style={{ width: '20%', margin: 'auto' }}
               >
                 <option value="">Selecione...</option>
@@ -343,27 +314,28 @@ const Inserir = () => {
               </Form.Control>
             </Form.Group>
 
-            {/* Botão de envio para cadastrar a questão no banco */}
+            {/* Botão de submissão do cadastro[cite: 9] */}
             <Button
               variant="primary"
               type="submit"
+              className="btn-salvar-mobile"
               style={{ fontSize: 24, padding: 5, color: 'white', backgroundColor: 'Green', border: 'none', marginTop: 15 }}
             >
               Inserir
             </Button>
           </Form>
-        )}
 
-        {/* Mensagem de alerta para informar o resultado da operação de inserção */}
-        {mensagemFeedback && (
-          <Alert variant="info" style={{ marginTop: 20 }}>
-            {mensagemFeedback}
-          </Alert>
-        )}
-      </section>
+          {/* Alerta para exibir mensagens de sucesso ou falha após a tentativa de cadastro[cite: 9] */}
+          {mensagemFeedback && (
+            <Alert variant="info" style={{ marginTop: 20 }}>
+              {mensagemFeedback}
+            </Alert>
+          )}
+        </section>
+      )}
     </div>
   );
 };
 
-// Exporta o componente Inserir como padrão do módulo
+// Exporta o componente Inserir como exportação padrão do arquivo[cite: 9]
 export default Inserir;
