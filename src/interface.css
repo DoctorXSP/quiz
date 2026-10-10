@@ -1,5 +1,5 @@
 /* ========================================================
-   ESTILOS GERAIS E DESKTOP / PC (> 1024px) - INTERFACE
+   ESTILOS GERAIS E DESKTOP / PC (> 1024px) - CABEÇALHO
    ======================================================== */
 header {
     background: rgb(245, 115, 2);
@@ -35,7 +35,9 @@ header img {
     object-fit: contain;
 }
 
-/* SECTION PRINCIPAL DA INTERFACE DE JOGO */
+/* ========================================================
+   SECTION PRINCIPAL DA INTERFACE DE JOGO (PARTIDA)
+   ======================================================== */
 section {
     background-color: #ffd513de;
     display: flex;
@@ -50,7 +52,7 @@ section {
     position: relative;
 }
 
-/* 1. Imagem na esquerda */
+/* 1. Imagem da questão na coluna esquerda */
 .areaImagem {
     flex: 0 0 370px;
     display: flex;
@@ -86,7 +88,7 @@ section {
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* 2. Área das perguntas */
+/* 2. Área central: cronômetro, tema e enunciado da pergunta */
 .perguntas {
     flex: 1;
     max-height: 450px;
@@ -111,7 +113,7 @@ section {
 .Pergunta p { margin: 0; padding: 0; }
 .titTema { font-weight: 800; margin-right: 12px; }
 
-/* 3. Alternativas */
+/* 3. Coluna da direita: alternativas e botões de ação */
 .alternativas {
     flex: 0 0 410px;
     box-sizing: border-box;
@@ -198,7 +200,7 @@ section {
 .Avancar:active { transform: scale(0.96); }
 .icon { margin-left: 10px; }
 
-/* 4. Rodapé */
+/* 4. Rodapé de depuração da partida */
 .rodape-debug {
     background-color: #222;
     color: #bbb;
@@ -212,7 +214,9 @@ section {
 .rodape-debug span { margin: 0 6px; }
 .rodape-debug strong { color: #ffd513; }
 
-/* Modais de Acerto / Erro */
+/* ========================================================
+   MODAIS DE ACERTO / DERROTA
+   ======================================================== */
 .errou, .acertou {
     display: flex;
     flex-direction: column;
@@ -360,11 +364,10 @@ section {
     box-sizing: border-box;
 }
 
-/* 40% da largura da tela, centralizado e com 30% de respiro lateral */
 .login-card {
     width: 40%;
     margin: 0 auto;
-    padding: 40px 12%; /* 12% em cada lado = quase 30% de área de respiro interno */
+    padding: 40px 12%;
     background-color: #fcffab;
     border-radius: 20px;
     box-shadow: 4px 6px 18px rgba(0, 0, 0, 0.22);
@@ -431,7 +434,8 @@ section {
 }
 
 /* ========================================================
-   ESTILOS DOS FORMULÁRIOS NO PC (> 1024px)
+   ESTILOS DOS FORMULÁRIOS ADMINISTRATIVOS NO PC (> 1024px)
+   (Inserir, Alterar, Ajustes)
    ======================================================== */
 .admin-section {
     width: 80%;
@@ -450,7 +454,7 @@ section {
     width: 100%;
 }
 
-/* Classes da barra de filtro no PC */
+/* Barra de filtros no PC (Alterar) */
 .filtro-container {
     width: 100%;
     display: flex;
@@ -464,6 +468,28 @@ section {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+/* Seletor compacto e centralizado para alternativa correta no PC */
+.admin-section .campo-correta {
+    width: auto;
+    min-width: 150px;
+    max-width: 180px;
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+    text-align-last: center;
+}
+
+/* Container de botões de navegação e salvamento no desktop */
+.botoes-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+    margin-bottom: 20px;
 }
 
 /* ========================================================
@@ -491,12 +517,12 @@ section {
    RESPONSIVIDADE: SMARTPHONES (≤ 768px)
    ======================================================== */
 @media (max-width: 768px) {
-    /* 1. REMOVE CABEÇALHO NO CELULAR */
+    /* 1. Oculta o cabeçalho no celular para poupar tela vertical */
     header {
         display: none !important;
     }
 
-    /* 2. FORMULÁRIO OCUPANDO 95% DA LARGURA */
+    /* 2. Painel administrativo ocupando a largura adequada da tela */
     .admin-section {
         width: 95% !important;
         margin: 15px auto !important;
@@ -508,20 +534,32 @@ section {
         width: 100% !important;
     }
 
-    /* 3. INPUTS DO FORMULÁRIO EM 100% NO CELULAR */
+    /* 3. Inputs de texto/área ocupam 100% no celular (EXCETO o seletor compacto de correta) */
     .admin-section .campo-tema,
     .admin-section .campo-pergunta,
     .admin-section .campo-opcao,
     .admin-section .campo-imagem,
-    .admin-section .campo-correta,
-    .admin-section .form-control {
+    .admin-section .form-control:not(.campo-correta) {
         width: 100% !important;
         max-width: 100% !important;
         font-size: 14px !important;
         box-sizing: border-box !important;
     }
 
-    /* 4. BARRA DE BUSCA E FILTRO EMPILHADA NO CELULAR */
+    /* 4. Mantém o seletor da alternativa correta compacto com a largura do texto e centralizado no celular */
+    .admin-section .campo-correta {
+        width: auto !important;
+        min-width: 150px !important;
+        max-width: 180px !important;
+        margin: 0 auto !important;
+        display: block !important;
+        text-align: center !important;
+        text-align-last: center !important;
+        font-size: 14px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 5. Barra de busca e filtros empilhada e centralizada no celular (Alterar) */
     .filtro-container {
         flex-direction: column !important;
         width: 100% !important;
@@ -530,55 +568,74 @@ section {
         padding: 15px 12px !important;
         border-radius: 15px;
         box-sizing: border-box !important;
+        align-items: center !important;
     }
 
     .filtro-bloco {
         flex-direction: column !important;
         width: 100% !important;
-        align-items: stretch !important;
+        align-items: center !important;
+        justify-content: center !important;
         gap: 8px !important;
     }
 
     .filtro-bloco span {
-        text-align: left;
+        text-align: center !important;
         font-size: 14pt;
+        width: 100% !important;
     }
 
     .filtro-bloco select,
     .filtro-bloco input {
         width: 100% !important;
+        max-width: 320px !important;
         font-size: 15px !important;
         padding: 8px !important;
+        text-align: center !important;
+        text-align-last: center !important;
+        margin: 0 auto !important;
     }
 
+    /* Botões Filtrar e Buscar centralizados com largura padronizada no celular */
     .filtro-bloco button {
-        width: 100% !important;
-        padding: 10px !important;
+        width: 85% !important;
+        max-width: 320px !important;
+        padding: 11px !important;
         font-size: 16px !important;
+        margin: 5px auto 0 auto !important;
+        display: block !important;
     }
 
-    /* 5. BOTÕES DE NAVEGAÇÃO E AÇÃO EM COLUNA NO CELULAR */
+    /* 6. Botões inferiores de navegação e salvamento perfeitamente centralizados no celular */
     .botoes-container {
         display: flex !important;
         flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
         width: 100% !important;
         gap: 10px !important;
+        margin: 20px auto !important;
     }
 
     .botoes-container button {
-        width: 100% !important;
-        margin: 0 !important;
+        width: 85% !important;
+        max-width: 320px !important;
+        margin: 0 auto !important;
         padding: 12px !important;
         font-size: 16px !important;
+        display: block !important;
     }
 
     .btn-salvar-mobile {
-        width: 100% !important;
+        width: 85% !important;
+        max-width: 320px !important;
+        margin: 10px auto 0 auto !important;
         padding: 14px !important;
         font-size: 18px !important;
+        display: block !important;
     }
 
-    /* 6. LOGIN NO SMARTPHONE: OCUPA 95% */
+    /* 7. Card de login adaptado para 95% no mobile */
     .login-wrapper {
         min-height: 100vh !important;
         padding: 10px !important;
@@ -599,7 +656,7 @@ section {
         padding: 12px !important;
     }
 
-    /* Jogo no smartphone */
+    /* 8. Interface da partida de jogo no smartphone */
     section {
         flex-direction: column;
         align-items: center;

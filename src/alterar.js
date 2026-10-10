@@ -1,5 +1,5 @@
-// Importa o núcleo do React e os hooks para controle de estado, efeitos colaterais e referências DOM[cite: 3]
-import React, { useState, useEffect, useRef } from 'react';
+// Importa o núcleo do React e os hooks para controle de estado, efeitos colaterais, memorização e referências DOM[cite: 3]
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 // Importa a biblioteca Axios para realizar requisições HTTP para a API[cite: 3]
 import axios from 'axios';
@@ -17,7 +17,7 @@ import imagemTorta from './img/torta.webp';
 import imagemPaulo from './img/pauloFreire.gif';
 
 // Define a URL base do backend Express utilizado nas chamadas de API[cite: 3]
-const URL_API = 'http://localhost:3042';
+const URL_API = process.env.REACT_APP_API_URL || 'http://localhost:3042';
 
 // Declara o componente funcional principal 'Alterar'[cite: 3]
 const Alterar = () => {
@@ -83,6 +83,61 @@ const Alterar = () => {
     }
   };
 
+  // Função utilitária memorizada para resetar o arquivo selecionado e esvaziar o input file no DOM
+  const limparSelecaoArquivo = useCallback(() => {
+    setArquivoImagem(null);
+    if (inputArquivoRef.current) {
+      inputArquivoRef.current.value = '';
+    }
+  }, []);
+
+  // Função assíncrona memorizada para consultar a lista de temas na API
+  const buscarTemas = useCallback(async () => {
+    try {
+      // Faz requisição GET para o endpoint '/temas'[cite: 3]
+      const resposta = await axios.get(`${URL_API}/temas`);
+      // Guarda os temas recebidos no estado[cite: 3]
+      setTemas(resposta.data);
+    } catch (erro) {
+      // Registra erro no console em caso de problema na rede ou servidor[cite: 3]
+      console.error('❌ Erro ao buscar temas:', erro);
+      // Apresenta mensagem de alerta de erro para o usuário[cite: 3]
+      setMensagemFeedback({ tipo: 'danger', texto: 'Erro ao buscar temas' });
+    }
+  }, []);
+
+  // Função assíncrona memorizada para consultar registros aplicando filtros opcionais
+  const buscarRegistros = useCallback(async (filtroTema = '', filtroNumero = '', manterIndice = null) => {
+    try {
+      // Faz a requisição GET passando filtros por query string[cite: 3]
+      const resposta = await axios.get(
+        `${URL_API}/registros?tema=${filtroTema}&numero=${filtroNumero}`
+      );
+
+      // Atualiza a lista de perguntas no estado com a resposta da API[cite: 3]
+      setRegistros(resposta.data);
+
+      // Mantém o índice atual após salvar caso solicitado e dentro do tamanho da lista[cite: 3]
+      if (manterIndice !== null && manterIndice < resposta.data.length) {
+        setIndiceAtual(manterIndice);
+      } else {
+        // Reinicia para a primeira pergunta caso contrário[cite: 3]
+        setIndiceAtual(0);
+      }
+
+      // Descarta o arquivo temporário selecionado no input
+      limparSelecaoArquivo();
+
+      // Atualiza a versão do timestamp para recarregar a visualização da imagem[cite: 3]
+      setVersaoImagem(Date.now());
+    } catch (erro) {
+      // Registra erro no console caso a busca falhe[cite: 3]
+      console.error('❌ Erro ao buscar registros:', erro);
+      // Notifica o usuário sobre a falha[cite: 3]
+      setMensagemFeedback({ tipo: 'danger', texto: 'Erro ao buscar registros' });
+    }
+  }, [limparSelecaoArquivo]);
+
   // Efeito disparado sempre que o estado 'autenticado' sofrer alterações[cite: 3]
   useEffect(() => {
     // Aborta a busca caso o usuário ainda não tenha feito login com sucesso[cite: 3]
@@ -93,7 +148,7 @@ const Alterar = () => {
 
     // Carrega a listagem de registros/perguntas disponíveis[cite: 3]
     buscarRegistros();
-  }, [autenticado]);
+  }, [autenticado, buscarTemas, buscarRegistros]);
 
   // Efeito que atualiza dinamicamente a URL da pré-visualização da imagem[cite: 3]
   useEffect(() => {
@@ -143,61 +198,6 @@ const Alterar = () => {
     // Limpa o timer se a mensagem for substituída antes de concluir o tempo[cite: 3]
     return () => clearTimeout(temporizador);
   }, [mensagemFeedback]);
-
-  // Função assíncrona para consultar a lista de temas na API[cite: 3]
-  const buscarTemas = async () => {
-    try {
-      // Faz requisição GET para o endpoint '/temas'[cite: 3]
-      const resposta = await axios.get(`${URL_API}/temas`);
-      // Guarda os temas recebidos no estado[cite: 3]
-      setTemas(resposta.data);
-    } catch (erro) {
-      // Registra erro no console em caso de problema na rede ou servidor[cite: 3]
-      console.error('❌ Erro ao buscar temas:', erro);
-      // Apresenta mensagem de alerta de erro para o usuário[cite: 3]
-      setMensagemFeedback({ tipo: 'danger', texto: 'Erro ao buscar temas' });
-    }
-  };
-
-  // Função assíncrona para consultar registros aplicando filtros opcionais[cite: 3]
-  const buscarRegistros = async (filtroTema = '', filtroNumero = '', manterIndice = null) => {
-    try {
-      // Faz a requisição GET passando filtros por query string[cite: 3]
-      const resposta = await axios.get(
-        `${URL_API}/registros?tema=${filtroTema}&numero=${filtroNumero}`
-      );
-
-      // Atualiza a lista de perguntas no estado com a resposta da API[cite: 3]
-      setRegistros(resposta.data);
-
-      // Mantém o índice atual após salvar caso solicitado e dentro do tamanho da lista[cite: 3]
-      if (manterIndice !== null && manterIndice < resposta.data.length) {
-        setIndiceAtual(manterIndice);
-      } else {
-        // Reinicia para a primeira pergunta caso contrário[cite: 3]
-        setIndiceAtual(0);
-      }
-
-      // Descarta o arquivo temporário selecionado no input[cite: 3]
-      limparSelecaoArquivo();
-
-      // Atualiza a versão do timestamp para recarregar a visualização da imagem[cite: 3]
-      setVersaoImagem(Date.now());
-    } catch (erro) {
-      // Registra erro no console caso a busca falhe[cite: 3]
-      console.error('❌ Erro ao buscar registros:', erro);
-      // Notifica o usuário sobre a falha[cite: 3]
-      setMensagemFeedback({ tipo: 'danger', texto: 'Erro ao buscar registros' });
-    }
-  };
-
-  // Função utilitária para resetar o arquivo selecionado e esvaziar o input file no DOM[cite: 3]
-  const limparSelecaoArquivo = () => {
-    setArquivoImagem(null);
-    if (inputArquivoRef.current) {
-      inputArquivoRef.current.value = '';
-    }
-  };
 
   // Navega para o próximo registro da lista[cite: 3]
   const proximoRegistro = () => {
@@ -534,16 +534,35 @@ const Alterar = () => {
                 </div>
               )}
 
-              {/* Seletor dropdown para definir a letra da alternativa correta */}
-              <Form.Group controlId="formCorreta">
-                <Form.Label>Correta:</Form.Label>
+              {/* Seletor dropdown para definir a letra da alternativa correta ajustado para caber apenas o texto e centralizado */}
+              <Form.Group 
+                controlId="formCorreta"
+                style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  margin: '15px auto'
+                }}
+              >
+                <Form.Label style={{ marginBottom: 5 }}>Correta:</Form.Label>
                 <Form.Control
                   as="select"
                   name="correta"
                   value={registros[indiceAtual].correta || 'A'}
                   onChange={manipularMudancaTexto}
                   className="campo-correta"
-                  style={{ width: '20%', margin: 'auto' }}
+                  style={{ 
+                    width: 'auto', 
+                    minWidth: '150px', 
+                    maxWidth: '180px',
+                    padding: '5px 12px',
+                    fontSize: 14,
+                    textAlign: 'center',
+                    textAlignLast: 'center',
+                    margin: '0 auto',
+                    display: 'block'
+                  }}
                 >
                   <option value="A">A</option>
                   <option value="B">B</option>
@@ -552,14 +571,25 @@ const Alterar = () => {
                 </Form.Control>
               </Form.Group>
 
-              {/* Barra de botões de navegação e salvamento */}
-              <div className="botoes-container" style={{ marginTop: 25, marginBottom: 20 }}>
+              {/* Barra de botões de navegação e salvamento perfeitamente centralizada */}
+              <div 
+                className="botoes-container" 
+                style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  flexWrap: 'wrap', 
+                  gap: 12, 
+                  marginTop: 25, 
+                  marginBottom: 20 
+                }}
+              >
                 {/* Botão para voltar à questão anterior */}
                 <Button
                   variant="secondary"
                   onClick={registroAnterior}
                   disabled={indiceAtual === 0}
-                  style={{ marginRight: 10 }}
+                  style={{ padding: '6px 18px' }}
                 >
                   Anterior
                 </Button>
@@ -569,7 +599,7 @@ const Alterar = () => {
                   variant="secondary"
                   onClick={proximoRegistro}
                   disabled={indiceAtual === registros.length - 1}
-                  style={{ marginRight: 10 }}
+                  style={{ padding: '6px 18px' }}
                 >
                   Próximo
                 </Button>
@@ -579,7 +609,7 @@ const Alterar = () => {
                   variant="dark"
                   onClick={ultimoRegistro}
                   disabled={indiceAtual === registros.length - 1}
-                  style={{ marginRight: 10 }}
+                  style={{ padding: '6px 18px' }}
                 >
                   Último
                 </Button>
@@ -588,14 +618,14 @@ const Alterar = () => {
                 <Button
                   onClick={alterarRegistro}
                   className="btn-salvar-mobile"
-                  style={{ fontSize: 20, padding: '5px 25px', color: 'white', backgroundColor: 'Green', border: 'none' }}
+                  style={{ fontSize: 18, padding: '6px 26px', color: 'white', backgroundColor: 'Green', border: 'none' }}
                 >
                   Salvar Alterações
                 </Button>
               </div>
 
               {/* Indicador textual de paginação/posição do registro atual */}
-              <div style={{ fontSize: '12pt', marginTop: 15, color: '#666' }}>
+              <div style={{ fontSize: '12pt', marginTop: 15, color: '#666', textAlign: 'center' }}>
                 {indiceAtual + 1} de {registros.length} registros
               </div>
             </Form>
@@ -619,5 +649,5 @@ const Alterar = () => {
   );
 };
 
-// Exporta o componente Alterar como export padrão do módulo
+// Exporta o componente Alterar como export padrão do módulo[cite: 13]
 export default Alterar;
