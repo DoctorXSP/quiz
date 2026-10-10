@@ -19,8 +19,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // Importa os ícones específicos de avanço e relógio do FontAwesome
 import { faForward, faClock } from '@fortawesome/free-solid-svg-icons';
 
-// Importa o React e os hooks necessários (adicionando useCallback para memorizar funções e corrigir o ESLint)
-import React, { useState, useEffect, useCallback } from 'react';
+// Importa o React e os hooks necessários (useCallback para memorização e useRef para controle síncrono de IDs)
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 // Importa o componente reprodutor de áudio para HTML5
 import ReactAudioPlayer from 'react-audio-player';
@@ -55,6 +55,7 @@ const embaralharArray = (array) => {
   return lista;
 };
 
+// Declaração do componente funcional principal da interface do jogo
 function Interface() {
   // Controla a visibilidade da tela/modal de erro ("Torta na cara")
   const [exibirPerdeu, setExibirPerdeu] = useState(false);
@@ -72,14 +73,16 @@ function Interface() {
   const [perguntaAtual, setPerguntaAtual] = useState({});
   // Guarda as opções de resposta (A, B, C, D) já embaralhadas para exibição
   const [opcoesEmbaralhadas, setOpcoesEmbaralhadas] = useState([]);
-  // Armazena a lista de IDs de questões já sorteadas para evitar perguntas repetidas
+  // Armazena a lista de IDs de questões já sorteadas para exibição visual no rodapé de depuração
   const [historicoSorteio, setHistoricoSorteio] = useState([]);
+  // Referência mutável imediata para checagem síncrona dos IDs sem atraso do ciclo de renderização do React
+  const historicoRef = useRef([]);
   // Guarda a quantidade de segundos restantes no cronômetro (inicializado em 90s)
   const [segundosRestantes, setSegundosRestantes] = useState(90);
   // Determina se a contagem do cronômetro está ocorrendo
   const [cronometroAtivo, setCronometroAtivo] = useState(true);
 
-  // Função memorizada com useCallback para buscar uma nova questão na API sem gerar warnings no ESLint
+  // Função memorizada com useCallback para buscar uma nova questão na API garantindo que não repita
   const buscarPerguntaAleatoria = useCallback(async (tentativas = 0) => {
     // Oculta modal de acerto anterior
     setExibirAcertou(false);
@@ -99,34 +102,45 @@ function Interface() {
     setCronometroAtivo(true);
 
     try {
-      // Requisita uma pergunta aleatória na rota /consultaAleatoria
-      const resposta = await axios.get(`${API_URL}/consultaAleatoria`);
-      const idSorteado = resposta.data.numero;
-
-      // Flag auxiliar para identificar se a questão atual já foi utilizada
-      let jaSorteado = false;
-
-      // Atualiza o histórico usando callback funcional para ler o estado mais recente sem disparar recriação
-      setHistoricoSorteio((anterior) => {
-        if (anterior.includes(idSorteado)) {
-          jaSorteado = true;
-          return anterior;
+      // Requisita uma pergunta aleatória enviando a lista de IDs já sorteados na query string
+      const resposta = await axios.get(`${API_URL}/consultaAleatoria`, {
+        params: {
+          excluir: historicoRef.current.join(',')
         }
-        return [...anterior, idSorteado];
       });
 
-      // Se já foi sorteada e ainda não atingiu o limite de 5 tentativas recursivas, tenta buscar outra
-      if (jaSorteado && tentativas < 5) {
+      // Extrai os dados da questão retornada
+      const pergunta = resposta.data;
+      // Garante que o número de identificação seja numérico para comparação segura
+      const idSorteado = Number(pergunta.numero);
+
+      // Se todas as perguntas da base já foram exibidas (mais de 15 tentativas sem achar uma inédita):
+      if (tentativas >= 15) {
+        // Notifica no console que o ciclo da base de perguntas foi completado
+        console.warn('⚠️ Todas as perguntas já foram sorteadas! Reiniciando o histórico da gincana.');
+        // Reinicia a lista de referência com o ID atual
+        historicoRef.current = [idSorteado];
+        // Atualiza o estado visual com o novo histórico
+        setHistoricoSorteio([idSorteado]);
+      // Se o ID sorteado já existe na lista síncrona de referência:
+      } else if (historicoRef.current.includes(idSorteado)) {
+        // Tenta buscar outra pergunta recursivamente incrementando a contagem de tentativas
         return buscarPerguntaAleatoria(tentativas + 1);
+      // Se for uma pergunta inédita:
+      } else {
+        // Adiciona imediatamente na referência síncrona
+        historicoRef.current.push(idSorteado);
+        // Atualiza o estado visual com a lista atualizada
+        setHistoricoSorteio([...historicoRef.current]);
       }
 
-      // Define os dados da pergunta recebida no estado
-      setPerguntaAtual(resposta.data);
+      // Define os dados da pergunta recebida no estado da aplicação
+      setPerguntaAtual(pergunta);
 
       // Prepara o array com as alternativas originais e seus respectivos textos
       const listaOpcoes = ['A', 'B', 'C', 'D'].map((letra) => ({
         chaveOriginal: letra,
-        texto: resposta.data[letra]
+        texto: pergunta[letra]
       }));
 
       // Embaralha as alternativas antes de salvar no estado
@@ -135,24 +149,27 @@ function Interface() {
       // Registra no console caso ocorra falha de conexão ou na API
       console.error('Erro ao buscar dados da API:', erro);
     }
-  }, []); // Array de dependências vazio pois as atualizações usam callbacks de estado funcional
+  }, []); // Dependências vazias mantêm a função estável e sem recriações desnecessárias
 
   // Efeito responsável por controlar o intervalo de 1 segundo do cronômetro
   useEffect(() => {
+    // Variável para armazenar a referência do temporizador
     let temporizador = null;
 
     // Caso o cronômetro esteja ligado:
     if (cronometroAtivo) {
+      // Cria o intervalo de 1000 milissegundos
       temporizador = setInterval(() => {
+        // Atualiza a contagem baseando-se no valor anterior
         setSegundosRestantes((anterior) => {
           // Quando resta 1 segundo ou menos, encerra o tempo
           if (anterior <= 1) {
-            setExibirTempoEsgotado(true);
-            setExibirPerdeu(true);
-            setBloquearInterface(true);
-            setCronometroAtivo(false);
-            clearInterval(temporizador);
-            return 0;
+            setExibirTempoEsgotado(true); // Exibe aviso de tempo esgotado
+            setExibirPerdeu(true);         // Exibe tela de erro
+            setBloquearInterface(true);    // Bloqueia as opções
+            setCronometroAtivo(false);     // Para o cronômetro
+            clearInterval(temporizador);   // Limpa o timer
+            return 0;                      // Fixa o visor em zero
           }
 
           // Ativa o áudio de contagem regressiva ao atingir 14 segundos restantes
@@ -170,15 +187,18 @@ function Interface() {
     return () => clearInterval(temporizador);
   }, [cronometroAtivo]);
 
-  // Efeito executado na montagem do componente, agora contendo buscarPerguntaAleatoria na dependência sem alertas
+  // Efeito executado na montagem do componente para carregar a 1ª questão
   useEffect(() => {
     buscarPerguntaAleatoria();
   }, [buscarPerguntaAleatoria]);
 
   // Função auxiliar para formatar os segundos em formato MM:SS
   const formatarTempo = (tempo) => {
+    // Calcula os minutos inteiros
     const minutos = Math.floor(tempo / 60);
+    // Calcula os segundos restantes
     const segundos = tempo % 60;
+    // Retorna formatado com dois dígitos usando padStart (ex: 01:30)
     return `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
   };
 
@@ -193,13 +213,13 @@ function Interface() {
 
     // Confere se a alternativa escolhida corresponde à resposta correta do backend
     if (chaveOriginal === perguntaAtual.correta) {
-      setExibirAcertou(true);
-      setExibirPerdeu(false);
-      setExibirTempoEsgotado(false);
+      setExibirAcertou(true);       // Exibe o modal de acerto
+      setExibirPerdeu(false);       // Oculta erro
+      setExibirTempoEsgotado(false); // Limpa flag de tempo
     } else {
-      setExibirPerdeu(true);
-      setExibirAcertou(false);
-      setExibirTempoEsgotado(false);
+      setExibirPerdeu(true);        // Exibe o modal de erro
+      setExibirAcertou(false);      // Oculta acerto
+      setExibirTempoEsgotado(false); // Sinaliza erro por resposta incorreta
     }
   };
 
@@ -208,21 +228,26 @@ function Interface() {
 
   // Verifica o comprimento do texto da pergunta para aplicar classes de tamanho no CSS
   const tamanhoTexto = perguntaAtual.pergunta ? perguntaAtual.pergunta.length : 0;
+  // Define classe tipográfica responsiva dependendo da extensão do texto
   const classeTamanhoPergunta = tamanhoTexto > 240 
     ? 'pergunta-extralonga' 
     : tamanhoTexto > 140 
       ? 'pergunta-longa' 
       : '';
 
+  // Renderização da interface visual (JSX)
   return (
     <div className="Interface">
       {/* Cabeçalho da página */}
       <header>
+        {/* Imagem estática da torta */}
         <img className="imgFoto" src={imagemTorta} alt="Torta na Cara" />
+        {/* Título e subtítulo do evento */}
         <div className="tituloHeader">
           <h1>TORTA NA CARA</h1>
           <h2>Semana Paulo Freire</h2>
         </div>
+        {/* GIF de Paulo Freire */}
         <img className="imgPaulo" src={imagemPauloFreire} alt="Paulo Freire" />
       </header>
 
@@ -252,6 +277,7 @@ function Interface() {
             }}
           >
             <p style={{ margin: 0 }}>Tempo:</p>
+            {/* Ícone de relógio e contagem MM:SS */}
             <FontAwesomeIcon icon={faClock} /> {formatarTempo(segundosRestantes)}
           </div>
 
@@ -261,11 +287,12 @@ function Interface() {
             <span>{perguntaAtual.tema || 'Carregando...'}</span>
           </div>
 
+          {/* Rótulo de título da questão */}
           <div className="titPergunta">
             <span className="titTema">Pergunta: </span>
           </div>
 
-          {/* Texto da pergunta com estilização de tamanho de texto dinâmico */}
+          {/* Texto da pergunta com estilização de tamanho dinâmico */}
           <div className={`Pergunta ${classeTamanhoPergunta}`}>
             <p>{perguntaAtual.pergunta}</p>
           </div>
@@ -278,15 +305,57 @@ function Interface() {
             {opcoesEmbaralhadas.map((item, index) => {
               const letraVisual = letrasBotoes[index];
               return (
-                <div className="opcao" key={index}>
+                /* 
+                  Container da opção completo tornado clicável para facilitar toque em dispositivos móveis.
+                  O onClick e onKeyDown foram transferidos para cá, englobando botão e texto.
+                */
+                <div
+                  className="opcao"
+                  key={index}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    // Executa a seleção apenas se a interface não estiver bloqueada
+                    if (!bloquearInterface) {
+                      selecionarOpcao(item.chaveOriginal);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    // Permite acionamento via teclado (Enter ou Espaço) para acessibilidade
+                    if (!bloquearInterface && (e.key === 'Enter' || e.key === ' ')) {
+                      selecionarOpcao(item.chaveOriginal);
+                    }
+                  }}
+                  style={{
+                    // Muda cursor conforme bloqueio
+                    cursor: bloquearInterface ? 'not-allowed' : 'pointer',
+                    // Evita seleção acidental de texto durante toques rápidos no mobile
+                    userSelect: 'none',
+                    // Remove o highlight cinza/azul padrão de toque do WebKit em mobile
+                    WebkitTapHighlightColor: 'transparent'
+                  }}
+                >
+                  {/* 
+                    Botão de alternativa visual:
+                    pointerEvents: 'none' faz o evento de toque passar diretamente para o container pai .opcao,
+                    evitando duplicidade de clique ou áreas mortas no mobile.
+                  */}
                   <button
                     className={`btn${letraVisual}`}
-                    onClick={() => selecionarOpcao(item.chaveOriginal)}
                     disabled={bloquearInterface}
+                    tabIndex={-1}
+                    style={{ pointerEvents: 'none' }}
                   >
                     {letraVisual}
                   </button>
-                  <p className="textOpcao">{item.texto}</p>
+
+                  {/* 
+                    Descrição em texto da resposta:
+                    pointerEvents: 'none' permite clicar sobre o texto e acionar o pai diretamente.
+                  */}
+                  <p className="textOpcao" style={{ margin: 0, pointerEvents: 'none' }}>
+                    {item.texto}
+                  </p>
                 </div>
               );
             })}
@@ -294,8 +363,10 @@ function Interface() {
 
           {/* Área de controle de áudio e botões de ação */}
           <div id="acao" className="botoesAcao">
+            {/* Dispara o áudio dos 14 segundos finais */}
             {exibirAudioAviso && <ReactAudioPlayer src={audioContagemRegressiva} autoPlay />}
 
+            {/* Botão avulso de avançar questão quando habilitado */}
             {exibirAvancar && (
               <button className="Avancar" style={{ zIndex: 99999 }} onClick={() => buscarPerguntaAleatoria()}>
                 PRÓXIMA PERGUNTA <FontAwesomeIcon className="icon" icon={faForward} />
@@ -305,20 +376,23 @@ function Interface() {
         </div>
       </section>
 
-      {/* Rodapé informativo para depuração */}
+      {/* Rodapé informativo para depuração da gincana */}
       <footer className="rodape-debug">
         <span><strong>ID Atual:</strong> {perguntaAtual.numero ?? '-'}</span>
         {historicoSorteio.length > 1 && (
-          <span> | <strong>Já sorteadas:</strong> {historicoSorteio.slice(0, -1).join(', ')}</span>
+          <span> | <strong>Já sorteadas ({historicoSorteio.length - 1}):</strong> {historicoSorteio.slice(0, -1).join(', ')}</span>
         )}
       </footer>
 
       {/* Modal exibido em caso de erro ou término do tempo */}
       {exibirPerdeu && (
         <div className="errou">
+          {/* Mensagem condicional de status */}
           <p>{exibirTempoEsgotado ? 'TEMPO ESGOTADO!!' : 'TORTA NA CARA!'}</p>
           <img src={iconeTorta} alt="Torta" />
+          {/* Toca som de torta na cara caso não tenha sido estouro de tempo */}
           {!exibirTempoEsgotado && <ReactAudioPlayer src={audioTortaNaCara} autoPlay />}
+          {/* Botão de avançar para a próxima rodada */}
           <button className="Avancar" style={{ zIndex: 99999 }} onClick={() => buscarPerguntaAleatoria()}>
             PRÓXIMA PERGUNTA <FontAwesomeIcon className="icon" icon={faForward} />
           </button>
@@ -330,7 +404,9 @@ function Interface() {
         <div className="acertou">
           <p>ACERTOU!</p>
           <img src={iconeJoinha} alt="Joinha" />
+          {/* Efeito sonoro de aplausos */}
           <ReactAudioPlayer src={audioAplausos} autoPlay />
+          {/* Botão de avançar para a próxima rodada */}
           <button className="Avancar" style={{ zIndex: 99999 }} onClick={() => buscarPerguntaAleatoria()}>
             PRÓXIMA PERGUNTA <FontAwesomeIcon className="icon" icon={faForward} />
           </button>
@@ -340,4 +416,5 @@ function Interface() {
   );
 }
 
+// Exporta o componente Interface como exportação padrão
 export default Interface;

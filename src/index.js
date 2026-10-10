@@ -25,6 +25,9 @@ import GerarIA from './GerarIA';
 // Importa o componente para exportação e restauração de dados via arquivo ZIP[cite: 8]
 import Backup from './Backup'; // Novo módulo de Backup[cite: 8]
 
+// Importa o componente de ajustes para redução de temas com IA e otimização de imagens
+import Ajustes from './Ajustes';
+
 // Declara o componente funcional raiz da aplicação[cite: 8]
 function App() {
   // Estado que armazena a tela ativa no momento (inicializa na tela 'Entrada')[cite: 8]
@@ -111,7 +114,8 @@ function App() {
         <button className='btn' onClick={() => lidarComCliqueNoBotao('Alterar')}>ALTERAR PERGUNTAS</button>
         {/* Botão para abrir o módulo de backup e restauração */}
         <button className='btn' onClick={() => lidarComCliqueNoBotao('Backup')}>BACKUP</button>
-        
+        {/* Botão para abrir o painel de ajustes, padronização de temas e otimização de imagens */}
+        <button className='btn' onClick={() => lidarComCliqueNoBotao('Ajustes')}>AJUSTES</button>
       </div>
 
       {/* Renderização condicional das Telas */}
@@ -134,7 +138,9 @@ function App() {
 
       {/* Exibe a tela de backup quando selecionada */}
       {pagina === 'Backup' && <Backup />}
-     
+
+      {/* Exibe a tela de ajustes de temas e imagens quando selecionada */}
+      {pagina === 'Ajustes' && <Ajustes />}
     </div>
   );
 }

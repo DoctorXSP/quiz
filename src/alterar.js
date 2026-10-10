@@ -516,7 +516,7 @@ const Alterar = () => {
                     style={{
                       height: '200px',
                       width: '200px',
-                      borderRadius: 100,
+                      borderRadius: 15,
                       objectFit: 'cover',
                       display: 'block',
                       margin: '0 auto',
